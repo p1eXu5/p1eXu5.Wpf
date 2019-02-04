@@ -54,8 +54,5 @@
     <Compile Include="ViewModel.cs" />
     <Compile Include="ViewRepository.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="WorkSpeed.MvvmBaseLibrary.csproj" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
