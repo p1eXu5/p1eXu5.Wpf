@@ -10,7 +10,7 @@ namespace Agbm.Wpf.MvvmBaseLibrary
     public interface IDialogCloseRequested
     {
         ICommand OkCommand { get; }
-        ICommand CanselCommand { get; }
+        ICommand CancelCommand { get; }
 
         event EventHandler< CloseRequestedEventArgs > CloseRequested;
     }

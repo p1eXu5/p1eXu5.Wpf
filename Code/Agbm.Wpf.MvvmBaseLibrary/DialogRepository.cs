@@ -4,12 +4,12 @@ using System.Windows;
 
 namespace Agbm.Wpf.MvvmBaseLibrary
 {
-    public class ViewRepository : IDialogRepository
+    public class DialogRepository : IDialogRepository
     {
         private readonly Dictionary<Type, Type> _repository;
         private readonly Window _owner;
 
-        public ViewRepository( Window owner )
+        public DialogRepository( Window owner )
         {
             _owner = owner ?? throw new ArgumentNullException();
 
@@ -33,19 +33,18 @@ namespace Agbm.Wpf.MvvmBaseLibrary
                 view.DataContext = viewModel;
                 view.Owner = _owner;
 
-                viewModel.CloseRequested += OnCloseDialogHandler;
+                void OnCloseRequestEventHandler ( object sender, CloseRequestedEventArgs args )
+                {
+                    viewModel.CloseRequested -= OnCloseRequestEventHandler;
+                    view.DialogResult = args.DialogResult;
+                }
+
+                viewModel.CloseRequested += OnCloseRequestEventHandler;
 
                 return view;
             }
 
             return null;
-
-            void OnCloseDialogHandler ( object s, CloseRequestedEventArgs e )
-                {
-                    viewModel.CloseRequested -= OnCloseDialogHandler;
-
-                    ( ( IDialog )s ).DialogResult = e.DialogResult;
-                }
         }
     }
 }
