@@ -7,6 +7,5 @@ namespace Agbm.Wpf.MvvmBaseLibrary
     public interface IAsyncCommand : ICommand
     {
         Task ExecuteAsync ( object obj );
-        bool CanExecute ();
     }
 }

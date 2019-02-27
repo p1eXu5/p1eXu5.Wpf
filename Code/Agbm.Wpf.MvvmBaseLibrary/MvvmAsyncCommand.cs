@@ -43,15 +43,16 @@ namespace Agbm.Wpf.MvvmBaseLibrary
             }
         }
 
-        public bool CanExecute ()
-        {
-            throw new NotImplementedException();
-        }
-
         public void RiseCanExecuteChanged ()
         {
             CanExecuteChanged?.Invoke( this, EventArgs.Empty );
         }
+
+        public async Task Execute ()
+        {
+            await ExecuteAsync( null );
+        }
+
 
         #region Explicit Implementation
 

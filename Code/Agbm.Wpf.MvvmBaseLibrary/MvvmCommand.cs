@@ -9,7 +9,7 @@ namespace Agbm.Wpf.MvvmBaseLibrary
         private readonly Action<object> _action;
         private readonly Predicate<object> _predicate;
 
-        public MvvmCommand(Action<object> action, Predicate<object> predicate = null)
+        public MvvmCommand ( Action< object > action, Predicate< object > predicate = null )
         {
             _action = action ?? throw new ArgumentNullException (nameof(action), @"Action parameter is null.");
             _predicate = predicate;
