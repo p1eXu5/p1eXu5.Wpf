@@ -45,13 +45,17 @@
   <ItemGroup>
     <Compile Include="CloseRequestedEventArgs.cs" />
     <Compile Include="DialogViewModel.cs" />
+    <Compile Include="IAsyncCommand.cs" />
     <Compile Include="IDialog.cs" />
     <Compile Include="IDialogCloseRequested.cs" />
     <Compile Include="IDialogRepository.cs" />
+    <Compile Include="IErrorHandler.cs" />
+    <Compile Include="MvvmAsyncCommand.cs" />
     <Compile Include="MvvmCommand.cs" />
     <Compile Include="NotifyingObject.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TaskExtensions.cs" />
     <Compile Include="ViewModel.cs" />
     <Compile Include="DialogRepository.cs" />
   </ItemGroup>
