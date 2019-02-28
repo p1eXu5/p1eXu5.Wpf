@@ -48,7 +48,7 @@ namespace Agbm.Wpf.MvvmBaseLibrary
             CanExecuteChanged?.Invoke( this, EventArgs.Empty );
         }
 
-        public async Task Execute ()
+        public async Task ExecuteAsync ()
         {
             await ExecuteAsync( null );
         }
