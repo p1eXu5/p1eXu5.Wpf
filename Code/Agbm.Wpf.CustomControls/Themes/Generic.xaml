@@ -5,7 +5,7 @@
     >
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/CircleDiagram;component/Themes/Colors.xaml" />
+        <ResourceDictionary Source="/Agbm.Wpf.CustomControls;component/Themes/Colors.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type local:CircleDiagramControl}">
