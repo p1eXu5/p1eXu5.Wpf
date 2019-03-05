@@ -10,6 +10,8 @@
 
     <Style TargetType="{x:Type local:CircleDiagramControl}">
         <Setter Property="Background" Value="#cfcfcf" />
+        <Setter Property="Indicator" Value="0.0" />
+        <Setter Property="IndicatorTip" Value="" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:CircleDiagramControl}">
@@ -25,10 +27,12 @@
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
-                                <TextBlock x:Name="PART_Summary" Text="0" 
+                                <TextBlock x:Name="PART_Summary" 
                                            FontSize="15"
                                            VerticalAlignment="Bottom" 
                                            HorizontalAlignment="Center" 
+                                           Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:CircleDiagramControl}, Path=Indicator, StringFormat={}{0:N1}}"
+                                           ToolTip="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:CircleDiagramControl}, Path=IndicatorTip}"
                                            />
 
                                 <TextBlock Text="{TemplateBinding Annotation}" Grid.Row="1"
@@ -37,11 +41,11 @@
                                            TextAlignment="Center"
                                            >
                                     <TextBlock.RenderTransform>
-                                        <TranslateTransform Y="-6"></TranslateTransform>
+                                        <TranslateTransform Y="0"></TranslateTransform>
                                     </TextBlock.RenderTransform>
                                 </TextBlock>
 
-                                <TextBlock x:Name="PART_Percents" Grid.Row="2" Text="0%" 
+                                <TextBlock x:Name="PART_Percents" Grid.Row="2" Text="" 
                                            FontSize="12"
                                            VerticalAlignment="Top" 
                                            HorizontalAlignment="Center" 
