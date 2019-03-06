@@ -102,21 +102,30 @@ namespace Agbm.Wpf.CustomControls
 
             if ( newValue != null ) {
 
-                var nums = newValue.Cast< (double val, string ann) >().Where( n => n.val > 0.0 ).ToArray();
-
+                var nums = newValue.Cast< (double val, string ann) >().ToArray();
                 if ( nums.Length == 0 ) return;
 
-                _paths = new Path[nums.Length];
 
                 var sum = nums.Aggregate( 0.0d, ( s, t ) => s + t.val );
                 var oneDegree = 360 / sum;
                 double startDegree = 0;
 
+                var notZeroCount = nums.Count( n => n.val > 0.0 );
+                if ( notZeroCount == 0 ) { return; }
+                _paths = new Path[ notZeroCount ];
+                var pathIndex = 0;
+
                 for ( int i = 0; i < nums.Length; ++i ) {
 
+                    if ( nums[ i ].val.Equals( 0.0 ) ) {
+                        GetBrush();
+                        continue;
+                    }
+
                     var endDegree = startDegree + nums[ i ].val * oneDegree;
-                    _paths[i] = GetPath( nums, i, startDegree, endDegree );
-                    _grid.Children.Add( _paths[i] );
+                    _paths[ pathIndex ] = GetPath( nums, pathIndex, startDegree, endDegree );
+                    _grid.Children.Add( _paths[ pathIndex ] );
+                    ++pathIndex;
 
                     startDegree = endDegree;
                 }
