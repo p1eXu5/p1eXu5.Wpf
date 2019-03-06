@@ -102,7 +102,7 @@ namespace Agbm.Wpf.CustomControls
 
             if ( newValue != null ) {
 
-                var nums = newValue.Cast< (double val, string ann) >().ToArray();
+                var nums = newValue.Cast< (double val, string ann) >().Where( n => n.val > 0.0 ).ToArray();
 
                 if ( nums.Length == 0 ) return;
 
