@@ -26,7 +26,7 @@ namespace Agbm.Wpf.MvvmBaseLibrary
 
         public bool CanExecute ( object parameter )
         {
-            return !_isExecuting && _canExecute?.Invoke( parameter ) == null;
+            return !_isExecuting && (_canExecute?.Invoke( parameter ) ?? true);
         }
 
 
