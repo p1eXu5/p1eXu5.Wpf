@@ -26,30 +26,6 @@ namespace Agbm.Wpf.CustomControls
         #endregion
 
 
-        #region ForegroundProperty
-
-        public static readonly DependencyProperty ForegroundProperty =
-                    Control.ForegroundProperty.AddOwner(
-                            typeof(ButtonChameleon),
-                            new FrameworkPropertyMetadata(
-                                    null,
-                                    FrameworkPropertyMetadataOptions.Inherits));
-
-        /// <summary>
-        /// The Background property defines the brush used to fill the background of the button.
-        /// </summary>
-        public Brush Foreground
-        {
-            get => (Brush)GetValue(ForegroundProperty);
-            set => SetValue(ForegroundProperty, value);
-        }
-
-        #endregion
-
-
-
-
-
         #region BackgroundProperty
 
         /// <summary>
