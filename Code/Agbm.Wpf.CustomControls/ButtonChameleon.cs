@@ -22,6 +22,14 @@ namespace Agbm.Wpf.CustomControls
         #region Fields
 
         private const double GAP = 1.0;
+        private const byte MOUSE_OVER_PERCENT = 12;
+        private const byte PRESSED_PERCENT = 25;
+
+        private static readonly Duration _hoverDuration = new Duration( TimeSpan.FromSeconds( 0.3 ) );
+        private static readonly Duration _pressedDuration = new Duration( TimeSpan.FromSeconds( 0.1 ) );
+        
+
+        private ColorHeights[] _colorHeights;
 
         #endregion
 
@@ -124,12 +132,10 @@ namespace Agbm.Wpf.CustomControls
 
             if ( Animates )
             {
-                Brush bo;
-
                 if ( !chameleon.RenderPressed ) 
                 {
-                    if ( (bool)e.NewValue ) {
-
+                    if ( (bool)e.NewValue ) 
+                    {
                         if ( chameleon._localResouces == null ) 
                         {
                             chameleon._localResouces = new LocalResouces();
@@ -137,25 +143,7 @@ namespace Agbm.Wpf.CustomControls
                             chameleon.InvalidateVisual();
                         }
 
-                        // TODO animations setup:
-
-                        Duration d = new Duration( TimeSpan.FromSeconds( 0.3 ) );
-                        DoubleAnimation da = new DoubleAnimation(1 , d);
-
-                        bo = chameleon.BackgroundOverlay;
-
-                        if ( bo is SolidColorBrush ) 
-                        {
-                            Color c = (( SolidColorBrush )chameleon.NormalBackgroundBrush).Color.Modify( 15 );
-
-                            ColorAnimation ca = new ColorAnimation( c, d );
-                            bo.BeginAnimation( SolidColorBrush.ColorProperty, ca );
-                        }
-                        else if ( bo is GradientBrush ) {
-
-                        }
-
-                        bo.BeginAnimation( Brush.OpacityProperty, da );
+                        AnimateBackgroundTo( chameleon, MOUSE_OVER_PERCENT, _hoverDuration );
                     }
                     // Mouse is not hovered
                     else if (chameleon._localResouces == null ) {
@@ -163,27 +151,7 @@ namespace Agbm.Wpf.CustomControls
                     }
                     else {
                         // TODO to normal state animations:
-                        Duration d = new Duration(TimeSpan.FromSeconds(0.3));
-                        DoubleAnimation da = new DoubleAnimation(0, d);
-
-                        bo = chameleon.BackgroundOverlay;
-
-                        if ( bo is SolidColorBrush ) {
-
-                            Color c = ((SolidColorBrush)chameleon.NormalBackgroundBrush).Color;
-                            ColorAnimation ca = new ColorAnimation(c, d);
-                            ca.Completed += CaOnCompleted;
-
-                            chameleon.BeginAnimation(SolidColorBrush.ColorProperty, ca);
-
-                            void CaOnCompleted( object sender, EventArgs args )
-                            {
-                                ca.Completed -= CaOnCompleted;
-                                ((SolidColorBrush)bo).Color = c;
-                            }
-                        }
-
-                        bo.BeginAnimation(Brush.OpacityProperty, da);
+                        AnimateBackgroundToNormal( chameleon, _pressedDuration );
                     }
                 }
             }
@@ -193,6 +161,63 @@ namespace Agbm.Wpf.CustomControls
             }
         }
 
+        private static void AnimateBackgroundToNormal( ButtonChameleon chameleon, Duration duration )
+        {
+            DoubleAnimation da = new DoubleAnimation( 0, duration);
+
+            var bo = chameleon.BackgroundOverlay;
+
+            if ( bo is SolidColorBrush ) {
+                Color c = (( SolidColorBrush )chameleon.NormalBackgroundBrush).Color;
+                ColorAnimation ca = new ColorAnimation( c, duration);
+                ca.Completed += CaOnCompleted;
+
+                chameleon.BeginAnimation( SolidColorBrush.ColorProperty, ca );
+
+                void CaOnCompleted( object sender, EventArgs args )
+                {
+                    ca.Completed -= CaOnCompleted;
+                    (( SolidColorBrush )bo).Color = c;
+                }
+            }
+
+            bo.BeginAnimation( Brush.OpacityProperty, da );
+        }
+
+        private static void AnimateBackgroundTo( ButtonChameleon chameleon, byte percent, Duration duration )
+        {
+            DoubleAnimation da = new DoubleAnimation( 1, duration);
+
+            var bo = chameleon.BackgroundOverlay;
+
+            if ( bo is SolidColorBrush ) {
+                bo.BeginAnimation( SolidColorBrush.ColorProperty, GetSolidBackgroundAnimation(chameleon, percent, duration));
+            }
+            else if ( bo is GradientBrush ) { }
+
+            bo.BeginAnimation( Brush.OpacityProperty, da );
+        }
+
+        private static void AnimateBacgroundFrom( ButtonChameleon chameleon, byte percent, Duration duration )
+        {
+            var bo = chameleon.BackgroundOverlay;
+
+            if (bo is SolidColorBrush) {
+                bo.BeginAnimation(SolidColorBrush.ColorProperty, GetSolidBackgroundAnimation( chameleon, percent, duration ));
+            }
+            else if (bo is GradientBrush) { }
+        }
+
+        private static ColorAnimation GetSolidBackgroundAnimation( ButtonChameleon chameleon, byte percent, Duration duration )
+        {
+            SolidColorBrush normal = ( SolidColorBrush )chameleon.NormalBackgroundBrush;
+
+            Color c = chameleon._colorHeights[0] == ColorHeights.Higher 
+                          ? normal.Color.ToDarken( percent )
+                          : normal.Color.ToBrighten( percent );
+            
+            return new ColorAnimation(c, duration);
+        }
 
         #endregion
 
@@ -221,87 +246,57 @@ namespace Agbm.Wpf.CustomControls
 
         private static void OnRenderPressedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            //ButtonChameleon chrome = ((ButtonChameleon)o);
+            ButtonChameleon chameleon = ((ButtonChameleon)o);
 
-            //if (chrome.Animates)
-            //{
-            //    if (((bool)e.NewValue))
-            //    {
-            //        if (chrome._localResources == null)
-            //        {
-            //            chrome._localResources = new LocalResources();
-            //            chrome.InvalidateVisual();
-            //        }
+            if (Animates)
+            {
+                Brush bo;
 
-            //        Duration duration = new Duration(TimeSpan.FromSeconds(0.1));
 
-            //        DoubleAnimation da = new DoubleAnimation(1, duration);
+                if ((bool)e.NewValue)
+                {
+                    if (chameleon._localResouces == null)
+                    {
+                        chameleon._localResouces = new LocalResouces();
+                        // ставит в очередь перерисовку
+                        chameleon.InvalidateVisual();
+                    }
 
-            //        chrome.BackgroundOverlay.BeginAnimation(SolidColorBrush.OpacityProperty, da);
-            //        chrome.BorderOverlayPen.Brush.BeginAnimation(SolidColorBrush.OpacityProperty, da);
-            //        chrome.LeftDropShadowBrush.BeginAnimation(LinearGradientBrush.OpacityProperty, da);
-            //        chrome.TopDropShadowBrush.BeginAnimation(LinearGradientBrush.OpacityProperty, da);
+                    // TODO animations setup:
 
-            //        da = new DoubleAnimation(0, duration);
-            //        chrome.InnerBorderPen.Brush.BeginAnimation(LinearGradientBrush.OpacityProperty, da);
-
-            //        ColorAnimation ca = new ColorAnimation(Color.FromRgb(0xC2, 0xE4, 0xF6), duration);
-            //        GradientStopCollection gsc = ((LinearGradientBrush)chrome.BackgroundOverlay).GradientStops;
-            //        gsc[0].BeginAnimation(GradientStop.ColorProperty, ca);
-            //        gsc[1].BeginAnimation(GradientStop.ColorProperty, ca);
-
-            //        ca = new ColorAnimation(Color.FromRgb(0xAB, 0xDA, 0xF3), duration);
-            //        gsc[2].BeginAnimation(GradientStop.ColorProperty, ca);
-
-            //        ca = new ColorAnimation(Color.FromRgb(0x90, 0xCB, 0xEB), duration);
-            //        gsc[3].BeginAnimation(GradientStop.ColorProperty, ca);
-
-            //        ca = new ColorAnimation(Color.FromRgb(0x2C, 0x62, 0x8B), duration);
-            //        chrome.BorderOverlayPen.Brush.BeginAnimation(SolidColorBrush.ColorProperty, ca);
-            //    }
-            //    else if (chrome._localResources == null)
-            //    {
-            //        chrome.InvalidateVisual();
-            //    }
-            //    else
-            //    {
-            //        bool renderMouseOver = chrome.RenderMouseOver;
-            //        Duration duration = new Duration(TimeSpan.FromSeconds(0.1));
-
-            //        DoubleAnimation da = new DoubleAnimation();
-            //        da.Duration = duration;
-            //        chrome.LeftDropShadowBrush.BeginAnimation(LinearGradientBrush.OpacityProperty, da);
-            //        chrome.TopDropShadowBrush.BeginAnimation(LinearGradientBrush.OpacityProperty, da);
-            //        chrome.InnerBorderPen.Brush.BeginAnimation(LinearGradientBrush.OpacityProperty, da);
-
-            //        if (!renderMouseOver)
-            //        {
-            //            chrome.BorderOverlayPen.Brush.BeginAnimation(SolidColorBrush.OpacityProperty, da);
-            //            chrome.BackgroundOverlay.BeginAnimation(SolidColorBrush.OpacityProperty, da);
-            //        }
-
-            //        ColorAnimation ca = new ColorAnimation();
-            //        ca.Duration = duration;
-            //        chrome.BorderOverlayPen.Brush.BeginAnimation(SolidColorBrush.ColorProperty, ca);
-
-            //        GradientStopCollection gsc = ((LinearGradientBrush)chrome.BackgroundOverlay).GradientStops;
-            //        gsc[0].BeginAnimation(GradientStop.ColorProperty, ca);
-            //        gsc[1].BeginAnimation(GradientStop.ColorProperty, ca);
-            //        gsc[2].BeginAnimation(GradientStop.ColorProperty, ca);
-            //        gsc[3].BeginAnimation(GradientStop.ColorProperty, ca);
-            //    }
-            //}
-            //else
-            //{
-            //    chrome._localResources = null;
-            //    chrome.InvalidateVisual();
-            //}
+                    if ( chameleon.RenderMouseOver ) {
+                        AnimateBacgroundFrom( chameleon, PRESSED_PERCENT, _pressedDuration );
+                    }
+                    else {
+                        AnimateBackgroundTo( chameleon, PRESSED_PERCENT, _pressedDuration );
+                    }
+                }
+                // Mouse is not hovered
+                else if (chameleon._localResouces == null)
+                {
+                    chameleon.InvalidateVisual();
+                }
+                else
+                {
+                    if ( chameleon.RenderMouseOver ) {
+                        AnimateBacgroundFrom( chameleon, MOUSE_OVER_PERCENT, _pressedDuration );
+                    }
+                    else {
+                        AnimateBackgroundToNormal( chameleon, _pressedDuration );
+                    }
+                }
+            }
+            else
+            {
+                chameleon._localResouces = null;
+                chameleon.InvalidateVisual();
+            }
         }
 
         #endregion
 
 
-        #region RenderMouseOverProperty
+        #region RenderDisabledProperty
 
         /// <summary>
         /// DependencyProperty for <see cref="RenderMouseOver" /> property.
@@ -468,9 +463,9 @@ namespace Agbm.Wpf.CustomControls
 
 
 
-        private static Brush _commonNormalBackgroundBrush;
+        private static SolidColorBrush _commonNormalBackgroundBrush;
 
-        private static Brush CommonNormalBackgroundBrush
+        private static SolidColorBrush CommonNormalBackgroundBrush
         {
             get {
                 if (_commonNormalBackgroundBrush == null)
@@ -500,18 +495,39 @@ namespace Agbm.Wpf.CustomControls
         private Brush NormalBackgroundBrush
         {
             get {
+                Brush brush;
+
                 if ( Background == null 
                      || ( Background != null 
                           && Background.GetType() != typeof( SolidColorBrush )
                           && Background.GetType() != typeof( GradientBrush ) ) )
                 {
+                    brush = CommonNormalBackgroundBrush;
+                    _colorHeights = new [] { ((SolidColorBrush)brush).Color.GetColorHeight() };
+
                     return CommonNormalBackgroundBrush;
                 }
 
+                brush = Background;
+                _colorHeights = brush is SolidColorBrush 
+                                    ? new[] { (( SolidColorBrush )brush).Color.GetColorHeight() } 
+                                    : GetColorHeights( ( GradientBrush )brush );
                 return Background;
             }
         }
 
+        private ColorHeights[] GetColorHeights( GradientBrush brush )
+        {
+            if ( brush == null ) return new ColorHeights[0];
+            var gs = brush.GradientStops;
+            var colorHeights = new ColorHeights[ gs.Count ];
+
+            for ( int i = 0; i < gs.Count; ++i ) {
+                colorHeights[ i ] = gs[ i ].Color.GetColorHeight();
+            }
+
+            return colorHeights;
+        }
 
 
         private Brush BackgroundOverlay
