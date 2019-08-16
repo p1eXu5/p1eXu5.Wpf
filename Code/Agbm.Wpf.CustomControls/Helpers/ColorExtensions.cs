@@ -12,6 +12,12 @@ using Agbm.Wpf.CustomControls.Exceptions;
 namespace Agbm.Wpf.CustomControls.Helpers
 {
 
+    internal enum ColorHeights
+    {
+        Lower,
+        Higher
+    }
+
     internal static class ColorExtensions
     {
         public static Color ToBrighten( this Color color, byte percent )
@@ -53,6 +59,14 @@ namespace Agbm.Wpf.CustomControls.Helpers
             var colorArr = new[] { color.R, color.G, color.B };
             byte averange = ( byte )((colorArr.Max() + colorArr.Min()) / 2);
             return new Color() { A = color.A, R = averange, G = averange, B = averange };
+        }
+
+        public static ColorHeights GetColorHeight( this Color color )
+        {
+            var colorArr = new[] { color.R, color.G, color.B };
+            if ( colorArr.Max() > byte.MaxValue / 2 ) return ColorHeights.Higher;
+
+            return ColorHeights.Lower;
         }
 
         private static byte CalculateBrighten( this byte colorValue, byte percent )
