@@ -31,6 +31,9 @@ namespace Agbm.Wpf.CustomControls
 
         private ColorHeights[] _colorHeights;
 
+        private byte _mouseOverPercent = MOUSE_OVER_PERCENT;
+        private byte _pressedPercent = PRESSED_PERCENT;
+
         #endregion
 
 
@@ -59,6 +62,71 @@ namespace Agbm.Wpf.CustomControls
         private static void OnBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Trace.WriteLine($"OnBackground thread id: {Thread.CurrentThread.ManagedThreadId}");
+        }
+
+        #endregion
+
+
+        #region HoveredBackgroundProperty
+
+
+        public static readonly DependencyProperty HoveredBackgroundProperty =
+                    DependencyProperty.RegisterAttached(
+                            "HoveredBackground",
+                            typeof( Brush ),
+                            typeof(ButtonChameleon),
+                            new FrameworkPropertyMetadata(
+                                null,
+                                FrameworkPropertyMetadataOptions.AffectsRender |
+                                FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
+                                FrameworkPropertyMetadataOptions.Inherits, // because attached to parent template
+                                PropertyChangedCallback));
+
+        private static void PropertyChangedCallback( DependencyObject d, DependencyPropertyChangedEventArgs e )
+        {
+            ButtonChameleon chameleon = d as ButtonChameleon;
+            if ( chameleon == null ) return;
+
+            if ( e.NewValue != null ) {
+                if ( e.NewValue is SolidColorBrush || e.NewValue is GradientBrush ) {
+                    chameleon._mouseOverPercent = 0;
+                    chameleon._pressedPercent = 12;
+                    return;
+                }
+            }
+
+            chameleon._mouseOverPercent = MOUSE_OVER_PERCENT;
+            chameleon._pressedPercent = PRESSED_PERCENT;
+        }
+
+
+        /// <summary>
+        /// The Background property defines the brush used to fill the background of the button.
+        /// </summary>
+        public Brush HoveredBackground
+        {
+            get => (Brush)GetValue(HoveredBackgroundProperty);
+            set => SetValue(HoveredBackgroundProperty, value);
+        }
+
+        public static void SetHoveredBackground( DependencyObject element, Brush value )
+        {
+            if (element == null)
+            {
+                throw new ArgumentNullException(nameof( element ));
+            }
+
+            element.SetValue(HoveredBackgroundProperty, value);
+        }
+
+        public static Brush GetHoveredBackground(DependencyObject element)
+        {
+            if (element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
+
+            return (Brush)element.GetValue(HoveredBackgroundProperty);
         }
 
         #endregion
@@ -143,7 +211,7 @@ namespace Agbm.Wpf.CustomControls
                             chameleon.InvalidateVisual();
                         }
 
-                        AnimateBackgroundTo( chameleon, MOUSE_OVER_PERCENT, _hoverDuration );
+                        AnimateBackgroundTo( chameleon, chameleon._mouseOverPercent, _hoverDuration );
                     }
                     // Mouse is not hovered
                     else if (chameleon._localResouces == null ) {
@@ -212,6 +280,8 @@ namespace Agbm.Wpf.CustomControls
         {
             SolidColorBrush normal = ( SolidColorBrush )chameleon.NormalBackgroundBrush;
 
+
+
             Color c = chameleon._colorHeights[0] == ColorHeights.Higher 
                           ? normal.Color.ToDarken( percent )
                           : normal.Color.ToBrighten( percent );
@@ -265,10 +335,10 @@ namespace Agbm.Wpf.CustomControls
                     // TODO animations setup:
 
                     if ( chameleon.RenderMouseOver ) {
-                        AnimateBacgroundFrom( chameleon, PRESSED_PERCENT, _pressedDuration );
+                        AnimateBacgroundFrom( chameleon, chameleon._pressedPercent, _pressedDuration );
                     }
                     else {
-                        AnimateBackgroundTo( chameleon, PRESSED_PERCENT, _pressedDuration );
+                        AnimateBackgroundTo( chameleon, chameleon._pressedPercent, _pressedDuration );
                     }
                 }
                 // Mouse is not hovered
@@ -279,7 +349,7 @@ namespace Agbm.Wpf.CustomControls
                 else
                 {
                     if ( chameleon.RenderMouseOver ) {
-                        AnimateBacgroundFrom( chameleon, MOUSE_OVER_PERCENT, _pressedDuration );
+                        AnimateBacgroundFrom( chameleon, chameleon._mouseOverPercent, _pressedDuration );
                     }
                     else {
                         AnimateBackgroundToNormal( chameleon, _pressedDuration );
@@ -497,10 +567,13 @@ namespace Agbm.Wpf.CustomControls
             get {
                 Brush brush;
 
-                if ( Background == null 
-                     || ( Background != null 
+                if ( (Background == null && HoveredBackground == null) 
+                     || ( Background != null && HoveredBackground == null
                           && Background.GetType() != typeof( SolidColorBrush )
-                          && Background.GetType() != typeof( GradientBrush ) ) )
+                          && Background.GetType() != typeof( GradientBrush ) )
+                     || ( HoveredBackground != null
+                          && HoveredBackground.GetType() != typeof(SolidColorBrush)
+                          && HoveredBackground.GetType() != typeof(GradientBrush) ) )
                 {
                     brush = CommonNormalBackgroundBrush;
                     _colorHeights = new [] { ((SolidColorBrush)brush).Color.GetColorHeight() };
@@ -508,11 +581,13 @@ namespace Agbm.Wpf.CustomControls
                     return CommonNormalBackgroundBrush;
                 }
 
-                brush = Background;
+
+                brush = HoveredBackground ?? Background;
+ 
                 _colorHeights = brush is SolidColorBrush 
                                     ? new[] { (( SolidColorBrush )brush).Color.GetColorHeight() } 
                                     : GetColorHeights( ( GradientBrush )brush );
-                return Background;
+                return brush;
             }
         }
 
