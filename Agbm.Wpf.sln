@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.89
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Code", "Code", "{453536B9-69ED-44C8-858B-141639E353D8}"
 EndProject
@@ -12,6 +12,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agbm.Wpf.MvvmBaseLibrary.Tests", "tests\Agbm.Wpf.MvvmBaseLibrary.Tests\Agbm.Wpf.MvvmBaseLibrary.Tests.csproj", "{18C0EFD5-AE68-493F-BE8C-101441A05B9F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agbm.Wpf.CustomControls", "Code\Agbm.Wpf.CustomControls\Agbm.Wpf.CustomControls.csproj", "{240F5CE1-E550-4702-A577-825244A750CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abgm.Wpf.CustomControls.FunctionalTests", "Tests\Abgm.Wpf.CustomControls.Tests\Abgm.Wpf.CustomControls.FunctionalTests.csproj", "{DF307F94-30D0-431F-9CF3-D73F8E607B43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agbm.Wpf.CustomControls.Tests", "Tests\Agbm.Wpf.CustomControls.Tests\Agbm.Wpf.CustomControls.Tests.csproj", "{56FD3190-EBBE-4EE0-85BB-D866CC3BA4C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +35,14 @@ Global
 		{240F5CE1-E550-4702-A577-825244A750CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{240F5CE1-E550-4702-A577-825244A750CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{240F5CE1-E550-4702-A577-825244A750CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF307F94-30D0-431F-9CF3-D73F8E607B43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF307F94-30D0-431F-9CF3-D73F8E607B43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF307F94-30D0-431F-9CF3-D73F8E607B43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF307F94-30D0-431F-9CF3-D73F8E607B43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56FD3190-EBBE-4EE0-85BB-D866CC3BA4C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56FD3190-EBBE-4EE0-85BB-D866CC3BA4C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56FD3190-EBBE-4EE0-85BB-D866CC3BA4C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56FD3190-EBBE-4EE0-85BB-D866CC3BA4C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +51,8 @@ Global
 		{C92FF512-B9C0-4AAF-9A9B-D0DEE139AF44} = {453536B9-69ED-44C8-858B-141639E353D8}
 		{18C0EFD5-AE68-493F-BE8C-101441A05B9F} = {8E77F935-2216-4F87-A8F0-B1A4606B1016}
 		{240F5CE1-E550-4702-A577-825244A750CF} = {453536B9-69ED-44C8-858B-141639E353D8}
+		{DF307F94-30D0-431F-9CF3-D73F8E607B43} = {8E77F935-2216-4F87-A8F0-B1A4606B1016}
+		{56FD3190-EBBE-4EE0-85BB-D866CC3BA4C5} = {8E77F935-2216-4F87-A8F0-B1A4606B1016}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4347A117-20D7-4BE4-9E87-6AE736ADAD2E}
