@@ -41,6 +41,7 @@
         </Button>
         <Button  IsCancel="True"  Height="50" Background="Red">Attts</Button>
         <Button  IsCancel="True"  Height="50" >Attts</Button>
+        <Button  IsCancel="True"  Height="50" customControls:ButtonChameleon.HoveredBackground="Red">Attts</Button>
         <CheckBox x:Name="CheckBox"></CheckBox>
         <Border BorderThickness="1" BorderBrush="Black" Width="10" Height="10" Margin="10" CornerRadius="4,0,0,0"></Border>
     </StackPanel>
