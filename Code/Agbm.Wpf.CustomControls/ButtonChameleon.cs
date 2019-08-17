@@ -22,7 +22,7 @@ namespace Agbm.Wpf.CustomControls
         #region Fields
 
         private const double GAP = 1.0;
-        private const byte MOUSE_OVER_PERCENT = 12;
+        private const byte HOVER_PERCENT = 12;
         private const byte PRESSED_PERCENT = 25;
 
         private static readonly Duration _hoverDuration = new Duration( TimeSpan.FromSeconds( 0.3 ) );
@@ -31,365 +31,394 @@ namespace Agbm.Wpf.CustomControls
 
         private ColorHeights[] _colorHeights;
 
-        private byte _mouseOverPercent = MOUSE_OVER_PERCENT;
+        private byte _mouseOverPercent = HOVER_PERCENT;
         private byte _pressedPercent = PRESSED_PERCENT;
 
         #endregion
 
+        #region DynamicProperties
 
-        #region BackgroundProperty
+            #region BackgroundProperty
 
-        /// <summary>
-        /// DependencyProperty for <see cref="Background" /> property.
-        /// </summary>
-        public static readonly DependencyProperty BackgroundProperty =
-                    Control.BackgroundProperty.AddOwner(
+            /// <summary>
+            /// DependencyProperty for <see cref="Background" /> property.
+            /// </summary>
+            public static readonly DependencyProperty BackgroundProperty =
+                        Control.BackgroundProperty.AddOwner(
+                                typeof(ButtonChameleon),
+                                new FrameworkPropertyMetadata(
+                                        null,
+                                        FrameworkPropertyMetadataOptions.AffectsRender,
+                                        OnBackgroundPropertyChanged));
+
+            /// <summary>
+            /// The Background property defines the brush used to fill the background of the button.
+            /// </summary>
+            public Brush Background
+            {
+                get => (Brush)GetValue(BackgroundProperty);
+                set => SetValue(BackgroundProperty, value);
+            }
+
+            private static void OnBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+            {
+                Trace.WriteLine($"OnBackground thread id: {Thread.CurrentThread.ManagedThreadId}");
+
+                ButtonChameleon chameleon = ( ButtonChameleon )d;
+
+
+                chameleon._normalBackgroundBrush = ( Brush )e.NewValue;
+
+                if ( chameleon._normalBackgroundBrush is SolidColorBrush brush ) {
+
+                    if ( brush.Color.GetColorHeight() == ColorHeights.Higher ) {
+                        chameleon._mouseHoverBackgroundBrush = new SolidColorBrush( brush.Color.ToDarken( HOVER_PERCENT ) );
+                        chameleon._pressedBackgroundBrush = new SolidColorBrush( brush.Color.ToDarken( PRESSED_PERCENT ) );
+                    }
+                    else {
+                        chameleon._mouseHoverBackgroundBrush = new SolidColorBrush(brush.Color.ToBrighten(HOVER_PERCENT) );
+                        chameleon._pressedBackgroundBrush = new SolidColorBrush(brush.Color.ToBrighten(PRESSED_PERCENT)) ;
+                    }
+
+                    chameleon._disabledBackgroundBrush = new SolidColorBrush( brush.Color.Desaturate() );
+
+                    chameleon._mouseHoverBackgroundBrush.Freeze();
+                    chameleon._pressedBackgroundBrush.Freeze();
+                    chameleon._disabledBackgroundBrush.Freeze();
+                }
+            }
+
+            #endregion
+
+
+            #region HoveredBackgroundProperty
+
+            public static readonly DependencyProperty HoveredBackgroundProperty =
+                        DependencyProperty.RegisterAttached(
+                                "HoveredBackground",
+                                typeof( Brush ),
+                                typeof(ButtonChameleon),
+                                new FrameworkPropertyMetadata(
+                                    null,
+                                    FrameworkPropertyMetadataOptions.AffectsRender |
+                                    FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
+                                    FrameworkPropertyMetadataOptions.Inherits // because attached to parent template
+                                    ));
+
+            public Brush HoveredBackground
+            {
+                get => (Brush)GetValue(HoveredBackgroundProperty);
+                set => SetValue(HoveredBackgroundProperty, value);
+            }
+
+            public static void SetHoveredBackground( DependencyObject element, Brush value )
+            {
+                if (element == null)
+                {
+                    throw new ArgumentNullException(nameof( element ));
+                }
+
+                element.SetValue(HoveredBackgroundProperty, value);
+            }
+
+            public static Brush GetHoveredBackground(DependencyObject element)
+            {
+                if (element == null)
+                {
+                    throw new ArgumentNullException(nameof(element));
+                }
+
+                return (Brush)element.GetValue(HoveredBackgroundProperty);
+            }
+
+            #endregion
+
+
+            #region PressedBackgroundProperty
+
+            public static readonly DependencyProperty PressedBackgroundProperty =
+                        DependencyProperty.RegisterAttached(
+                                "PressedBackground",
+                                typeof(Brush),
+                                typeof(ButtonChameleon),
+                                new FrameworkPropertyMetadata(
+                                    null,
+                                    FrameworkPropertyMetadataOptions.AffectsRender |
+                                    FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
+                                    FrameworkPropertyMetadataOptions.Inherits // because attached to parent template
+                                    ));
+
+            public Brush PressedBackground
+            {
+                get => (Brush)GetValue(PressedBackgroundProperty);
+                set => SetValue(PressedBackgroundProperty, value);
+            }
+
+            public static void SetPressedBackground(DependencyObject element, Brush value)
+            {
+                if (element == null)
+                {
+                    throw new ArgumentNullException(nameof(element));
+                }
+
+                element.SetValue(PressedBackgroundProperty, value);
+            }
+
+            public static Brush GetPressedBackground(DependencyObject element)
+            {
+                if (element == null)
+                {
+                    throw new ArgumentNullException(nameof(element));
+                }
+
+                return (Brush)element.GetValue(PressedBackgroundProperty);
+            }
+
+            #endregion
+
+
+            #region BorderBrushProperty
+
+            /// <summary>
+            /// DependencyProperty for <see cref="BorderBrush" /> property.
+            /// </summary>
+            public static readonly DependencyProperty BorderBrushProperty =
+                    Border.BorderBrushProperty.AddOwner(
                             typeof(ButtonChameleon),
                             new FrameworkPropertyMetadata(
                                     null,
-                                    FrameworkPropertyMetadataOptions.AffectsRender,
-                                    OnBackgroundPropertyChanged));
+                                    FrameworkPropertyMetadataOptions.AffectsRender));
 
-        /// <summary>
-        /// The Background property defines the brush used to fill the background of the button.
-        /// </summary>
-        public Brush Background
-        {
-            get => (Brush)GetValue(BackgroundProperty);
-            set => SetValue(BackgroundProperty, value);
-        }
-
-        private static void OnBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Trace.WriteLine($"OnBackground thread id: {Thread.CurrentThread.ManagedThreadId}");
-        }
-
-        #endregion
-
-
-        #region HoveredBackgroundProperty
-
-        public static readonly DependencyProperty HoveredBackgroundProperty =
-                    DependencyProperty.RegisterAttached(
-                            "HoveredBackground",
-                            typeof( Brush ),
-                            typeof(ButtonChameleon),
-                            new FrameworkPropertyMetadata(
-                                null,
-                                FrameworkPropertyMetadataOptions.AffectsRender |
-                                FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
-                                FrameworkPropertyMetadataOptions.Inherits // because attached to parent template
-                                ));
-
-        public Brush HoveredBackground
-        {
-            get => (Brush)GetValue(HoveredBackgroundProperty);
-            set => SetValue(HoveredBackgroundProperty, value);
-        }
-
-        public static void SetHoveredBackground( DependencyObject element, Brush value )
-        {
-            if (element == null)
+            /// <summary>
+            /// The BorderBrush property defines the brush used to draw the outer border.
+            /// </summary>
+            public Brush BorderBrush
             {
-                throw new ArgumentNullException(nameof( element ));
+                get => (Brush)GetValue(BorderBrushProperty);
+                set => SetValue(BorderBrushProperty, value);
             }
 
-            element.SetValue(HoveredBackgroundProperty, value);
-        }
+            #endregion
 
-        public static Brush GetHoveredBackground(DependencyObject element)
-        {
-            if (element == null)
+
+            #region CornerRadiusProperty
+
+            public static readonly DependencyProperty CornerRadiusProperty =
+                Border.CornerRadiusProperty.AddOwner(typeof(ButtonChameleon),
+                                                      new FrameworkPropertyMetadata(default(CornerRadius),
+                                                                                     FrameworkPropertyMetadataOptions.AffectsRender));
+
+            public CornerRadius CornerRadius
             {
-                throw new ArgumentNullException(nameof(element));
+                get => (CornerRadius)GetValue(CornerRadiusProperty);
+                set => SetValue(CornerRadiusProperty, value);
             }
 
-            return (Brush)element.GetValue(HoveredBackgroundProperty);
-        }
+            #endregion
 
-        #endregion
 
-        #region PressedBackgroundProperty
+            #region RenderMouseOverProperty
 
-        public static readonly DependencyProperty PressedBackgroundProperty =
-                    DependencyProperty.RegisterAttached(
-                            "PressedBackground",
-                            typeof(Brush),
-                            typeof(ButtonChameleon),
-                            new FrameworkPropertyMetadata(
-                                null,
-                                FrameworkPropertyMetadataOptions.AffectsRender |
-                                FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
-                                FrameworkPropertyMetadataOptions.Inherits // because attached to parent template
-                                ));
+            /// <summary>
+            /// DependencyProperty for <see cref="RenderMouseOver" /> property.
+            /// </summary>
+            public static readonly DependencyProperty RenderMouseOverProperty =
+                     DependencyProperty.Register("RenderMouseOver",
+                             typeof(bool),
+                             typeof(ButtonChameleon),
+                             new FrameworkPropertyMetadata(
+                                    false,
+                                    new PropertyChangedCallback(OnRenderMouseOverChanged)));
 
-        public Brush PressedBackground
-        {
-            get => (Brush)GetValue(PressedBackgroundProperty);
-            set => SetValue(PressedBackgroundProperty, value);
-        }
-
-        public static void SetPressedBackground(DependencyObject element, Brush value)
-        {
-            if (element == null)
+            /// <summary>
+            /// When true the chrome renders with a mouse over look.
+            /// </summary>
+            public bool RenderMouseOver
             {
-                throw new ArgumentNullException(nameof(element));
+                get => (bool)GetValue(RenderMouseOverProperty);
+                set => SetValue(RenderMouseOverProperty, value);
             }
 
-            element.SetValue(PressedBackgroundProperty, value);
-        }
-
-        public static Brush GetPressedBackground(DependencyObject element)
-        {
-            if (element == null)
+            private static void OnRenderMouseOverChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
             {
-                throw new ArgumentNullException(nameof(element));
-            }
+                ButtonChameleon chameleon = ((ButtonChameleon)o);
 
-            return (Brush)element.GetValue(PressedBackgroundProperty);
-        }
-
-        #endregion
-
-
-        #region BorderBrushProperty
-
-        /// <summary>
-        /// DependencyProperty for <see cref="BorderBrush" /> property.
-        /// </summary>
-        public static readonly DependencyProperty BorderBrushProperty =
-                Border.BorderBrushProperty.AddOwner(
-                        typeof(ButtonChameleon),
-                        new FrameworkPropertyMetadata(
-                                null,
-                                FrameworkPropertyMetadataOptions.AffectsRender));
-
-        /// <summary>
-        /// The BorderBrush property defines the brush used to draw the outer border.
-        /// </summary>
-        public Brush BorderBrush
-        {
-            get => (Brush)GetValue(BorderBrushProperty);
-            set => SetValue(BorderBrushProperty, value);
-        }
-
-        #endregion
-
-
-        #region CornerRadiusProperty
-
-        public static readonly DependencyProperty CornerRadiusProperty =
-            Border.CornerRadiusProperty.AddOwner(typeof(ButtonChameleon),
-                                                  new FrameworkPropertyMetadata(default(CornerRadius),
-                                                                                 FrameworkPropertyMetadataOptions.AffectsRender));
-
-        public CornerRadius CornerRadius
-        {
-            get => (CornerRadius)GetValue(CornerRadiusProperty);
-            set => SetValue(CornerRadiusProperty, value);
-        }
-
-        #endregion
-
-
-        #region RenderMouseOverProperty
-
-        /// <summary>
-        /// DependencyProperty for <see cref="RenderMouseOver" /> property.
-        /// </summary>
-        public static readonly DependencyProperty RenderMouseOverProperty =
-                 DependencyProperty.Register("RenderMouseOver",
-                         typeof(bool),
-                         typeof(ButtonChameleon),
-                         new FrameworkPropertyMetadata(
-                                false,
-                                new PropertyChangedCallback(OnRenderMouseOverChanged)));
-
-        /// <summary>
-        /// When true the chrome renders with a mouse over look.
-        /// </summary>
-        public bool RenderMouseOver
-        {
-            get => (bool)GetValue(RenderMouseOverProperty);
-            set => SetValue(RenderMouseOverProperty, value);
-        }
-
-        private static void OnRenderMouseOverChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-        {
-            ButtonChameleon chameleon = ((ButtonChameleon)o);
-
-            if ( Animates )
-            {
-                if ( !chameleon.RenderPressed ) 
+                if ( Animates )
                 {
-                    if ( (bool)e.NewValue ) 
+                    if ( !chameleon.RenderPressed ) 
                     {
-                        if ( chameleon._localResouces == null ) 
+                        if ( (bool)e.NewValue ) 
+                        {
+                            if ( chameleon._localResouces == null ) 
+                            {
+                                chameleon._localResouces = new LocalResouces();
+                                // ставит в очередь перерисовку
+                                chameleon.InvalidateVisual();
+                            }
+
+                            var parameters = chameleon.GetHoverAnimationParameters( _hoverDuration );
+                            AnimateBrushColor( parameters );
+                            AnimateBrushOpacity( parameters.From, _hoverDuration );
+                        }
+                        // Mouse is not hovered
+                        else if (chameleon._localResouces == null ) {
+                            chameleon.InvalidateVisual();
+                        }
+                        else {
+                            // TODO to normal state animations:
+                            AnimateBackgroundToNormal( chameleon, _pressedDuration );
+                        }
+                    }
+                }
+                else {
+                    chameleon._localResouces = null;
+                    chameleon.InvalidateVisual();
+                }
+
+                chameleon.Foreground = chameleon.ForegroundOverlay;
+            }
+
+
+
+            private static void AnimateBackgroundToNormal( ButtonChameleon chameleon, Duration duration )
+            {
+                DoubleAnimation da = new DoubleAnimation( 0, duration);
+
+                var bo = chameleon.BackgroundOverlay;
+
+                if ( bo is SolidColorBrush ) {
+                    Color c = (( SolidColorBrush )chameleon.NormalBackgroundBrush).Color;
+                    ColorAnimation ca = new ColorAnimation( c, duration);
+                    ca.Completed += CaOnCompleted;
+
+                    chameleon.BeginAnimation( SolidColorBrush.ColorProperty, ca );
+
+                    void CaOnCompleted( object sender, EventArgs args )
+                    {
+                        ca.Completed -= CaOnCompleted;
+                        (( SolidColorBrush )bo).Color = c;
+                    }
+                }
+
+                bo.BeginAnimation( Brush.OpacityProperty, da );
+            }
+
+            private static void AnimateBrushOpacity( Brush brush, Duration duration )
+            {
+                DoubleAnimation da = new DoubleAnimation( 1, duration);
+                brush.BeginAnimation( Brush.OpacityProperty, da );
+            }
+
+            private static void AnimateBrushColor( BrushAnimationPatameters parameters )
+            {
+                if ( parameters.To == null || parameters.To.GetType() != parameters.From.GetType() ) {
+                    if ( parameters.From is SolidColorBrush ) {
+
+                        var normalColor = ((SolidColorBrush)parameters.Default).Color;
+
+                        Color c = parameters.ColorHeights[0] == ColorHeights.Higher
+                          ? normalColor.ToDarken( parameters.DefaultPercent )
+                          : normalColor.ToBrighten( parameters.DefaultPercent );
+
+                        parameters.From.BeginAnimation( SolidColorBrush.ColorProperty, new ColorAnimation(c, parameters.Duration ) );
+                    }
+                    else if ( parameters.From is GradientBrush ) {
+
+                    }
+                }
+                else if (parameters.To is SolidColorBrush to)
+                {
+                    parameters.From.BeginAnimation(
+                        SolidColorBrush.ColorProperty, 
+                        new ColorAnimation( ((SolidColorBrush)parameters.To).Color, parameters.Duration));
+                }
+                else if ( parameters.To is GradientBrush from ) {
+
+                }
+
+            }
+
+            #endregion
+
+
+            #region RenderPressedProperty
+
+            /// <summary>
+            /// DependencyProperty for <see cref="RenderPressed" /> property.
+            /// </summary>
+            public static readonly DependencyProperty RenderPressedProperty =
+                     DependencyProperty.Register("RenderPressed",
+                             typeof(bool),
+                             typeof(ButtonChameleon),
+                             new FrameworkPropertyMetadata(
+                                    false,
+                                    new PropertyChangedCallback(OnRenderPressedChanged)));
+
+            /// <summary>
+            /// When true the chrome renders with a pressed look.
+            /// </summary>
+            public bool RenderPressed
+            {
+                get => (bool)GetValue(RenderPressedProperty);
+                set => SetValue(RenderPressedProperty, value);
+            }
+
+            private static void OnRenderPressedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+            {
+                ButtonChameleon chameleon = ((ButtonChameleon)o);
+
+                if (Animates)
+                {
+                    Brush bo;
+
+
+                    if ((bool)e.NewValue)
+                    {
+                        if (chameleon._localResouces == null)
                         {
                             chameleon._localResouces = new LocalResouces();
                             // ставит в очередь перерисовку
                             chameleon.InvalidateVisual();
                         }
 
-                        var parameters = chameleon.GetHoverAnimationParameters( _hoverDuration );
+                        // TODO animations setup:
+
+                        var parameters = chameleon.GetPressedAnimationParameters( _pressedDuration );
                         AnimateBrushColor( parameters );
-                        AnimateBrushOpacity( parameters.From, _hoverDuration );
+
+                        if ( !chameleon.RenderMouseOver ) {
+                            AnimateBrushOpacity( parameters.From, _pressedDuration );
+                        }
                     }
                     // Mouse is not hovered
-                    else if (chameleon._localResouces == null ) {
-                        chameleon.InvalidateVisual();
-                    }
-                    else {
-                        // TODO to normal state animations:
-                        AnimateBackgroundToNormal( chameleon, _pressedDuration );
-                    }
-                }
-            }
-            else {
-                chameleon._localResouces = null;
-                chameleon.InvalidateVisual();
-            }
-        }
-
-
-
-        private static void AnimateBackgroundToNormal( ButtonChameleon chameleon, Duration duration )
-        {
-            DoubleAnimation da = new DoubleAnimation( 0, duration);
-
-            var bo = chameleon.BackgroundOverlay;
-
-            if ( bo is SolidColorBrush ) {
-                Color c = (( SolidColorBrush )chameleon.NormalBackgroundBrush).Color;
-                ColorAnimation ca = new ColorAnimation( c, duration);
-                ca.Completed += CaOnCompleted;
-
-                chameleon.BeginAnimation( SolidColorBrush.ColorProperty, ca );
-
-                void CaOnCompleted( object sender, EventArgs args )
-                {
-                    ca.Completed -= CaOnCompleted;
-                    (( SolidColorBrush )bo).Color = c;
-                }
-            }
-
-            bo.BeginAnimation( Brush.OpacityProperty, da );
-        }
-
-        private static void AnimateBrushOpacity( Brush brush, Duration duration )
-        {
-            DoubleAnimation da = new DoubleAnimation( 1, duration);
-            brush.BeginAnimation( Brush.OpacityProperty, da );
-        }
-
-        private static void AnimateBrushColor( BrushAnimationPatameters parameters )
-        {
-            if ( parameters.To == null || parameters.To.GetType() != parameters.From.GetType() ) {
-                if ( parameters.From is SolidColorBrush ) {
-
-                    var normalColor = ((SolidColorBrush)parameters.Default).Color;
-
-                    Color c = parameters.ColorHeights[0] == ColorHeights.Higher
-                      ? normalColor.ToDarken( parameters.DefaultPercent )
-                      : normalColor.ToBrighten( parameters.DefaultPercent );
-
-                    parameters.From.BeginAnimation( SolidColorBrush.ColorProperty, new ColorAnimation(c, parameters.Duration ) );
-                }
-                else if ( parameters.From is GradientBrush ) {
-
-                }
-            }
-            else if (parameters.To is SolidColorBrush to)
-            {
-                parameters.From.BeginAnimation(
-                    SolidColorBrush.ColorProperty, 
-                    new ColorAnimation( ((SolidColorBrush)parameters.To).Color, parameters.Duration));
-            }
-            else if ( parameters.To is GradientBrush from ) {
-
-            }
-
-        }
-
-        #endregion
-
-
-        #region RenderPressedProperty
-
-        /// <summary>
-        /// DependencyProperty for <see cref="RenderPressed" /> property.
-        /// </summary>
-        public static readonly DependencyProperty RenderPressedProperty =
-                 DependencyProperty.Register("RenderPressed",
-                         typeof(bool),
-                         typeof(ButtonChameleon),
-                         new FrameworkPropertyMetadata(
-                                false,
-                                new PropertyChangedCallback(OnRenderPressedChanged)));
-
-        /// <summary>
-        /// When true the chrome renders with a pressed look.
-        /// </summary>
-        public bool RenderPressed
-        {
-            get => (bool)GetValue(RenderPressedProperty);
-            set => SetValue(RenderPressedProperty, value);
-        }
-
-        private static void OnRenderPressedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-        {
-            ButtonChameleon chameleon = ((ButtonChameleon)o);
-
-            if (Animates)
-            {
-                Brush bo;
-
-
-                if ((bool)e.NewValue)
-                {
-                    if (chameleon._localResouces == null)
+                    else if (chameleon._localResouces == null)
                     {
-                        chameleon._localResouces = new LocalResouces();
-                        // ставит в очередь перерисовку
                         chameleon.InvalidateVisual();
                     }
-
-                    // TODO animations setup:
-
-                    var parameters = chameleon.GetPressedAnimationParameters( _pressedDuration );
-                    AnimateBrushColor( parameters );
-
-                    if ( !chameleon.RenderMouseOver ) {
-                        AnimateBrushOpacity( parameters.From, _pressedDuration );
+                    else
+                    {
+                        if ( chameleon.RenderMouseOver ) {
+                            var parameters = chameleon.GetHoverAnimationParameters( _pressedDuration );
+                            AnimateBrushColor(parameters);
+                        }
+                        else {
+                            AnimateBackgroundToNormal( chameleon, _pressedDuration );
+                        }
                     }
-                }
-                // Mouse is not hovered
-                else if (chameleon._localResouces == null)
-                {
-                    chameleon.InvalidateVisual();
                 }
                 else
                 {
-                    if ( chameleon.RenderMouseOver ) {
-                        var parameters = chameleon.GetHoverAnimationParameters( _pressedDuration );
-                        AnimateBrushColor(parameters);
-                    }
-                    else {
-                        AnimateBackgroundToNormal( chameleon, _pressedDuration );
-                    }
+                    chameleon._localResouces = null;
+                    chameleon.InvalidateVisual();
                 }
+
+                chameleon.Foreground = chameleon.ForegroundOverlay;
             }
-            else
-            {
-                chameleon._localResouces = null;
-                chameleon.InvalidateVisual();
-            }
-        }
 
-        #endregion
+            #endregion
 
 
-        #region RenderDisabledProperty
+            #region RenderDisabledProperty
 
         /// <summary>
         /// DependencyProperty for <see cref="RenderMouseOver" /> property.
@@ -421,6 +450,115 @@ namespace Agbm.Wpf.CustomControls
         #endregion
 
 
+            #region ForegroundProperty
+
+            public static readonly DependencyProperty ForegroundProperty =
+                        Control.ForegroundProperty.AddOwner(
+                                typeof(ButtonChameleon),
+                                new FrameworkPropertyMetadata(
+                                        null,
+                                        FrameworkPropertyMetadataOptions.Inherits));
+
+            /// <summary>
+            /// The Background property defines the brush used to fill the background of the button.
+            /// </summary>
+            public Brush Foreground
+            {
+                get => (Brush)GetValue(ForegroundProperty);
+                set => SetValue(ForegroundProperty, value);
+            }
+
+        #endregion
+
+
+            #region HoveredForegroundProperty
+
+            public static readonly DependencyProperty HoveredForegroundProperty =
+                        DependencyProperty.RegisterAttached(
+                                "HoveredForeground",
+                                typeof(Brush),
+                                typeof(ButtonChameleon),
+                                new FrameworkPropertyMetadata(
+                                    null,
+                                    FrameworkPropertyMetadataOptions.AffectsRender |
+                                    FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
+                                    FrameworkPropertyMetadataOptions.Inherits // because attached to parent template
+                                    ));
+
+            public Brush HoveredForeground
+            {
+                get => (Brush)GetValue(HoveredForegroundProperty);
+                set => SetValue(HoveredForegroundProperty, value);
+            }
+
+            public static void SetHoveredForeground(DependencyObject element, Brush value)
+            {
+                if (element == null)
+                {
+                    throw new ArgumentNullException(nameof(element));
+                }
+
+                element.SetValue(HoveredForegroundProperty, value);
+            }
+
+            public static Brush GetHoveredForeground(DependencyObject element)
+            {
+                if (element == null)
+                {
+                    throw new ArgumentNullException(nameof(element));
+                }
+
+                return (Brush)element.GetValue(HoveredForegroundProperty);
+            }
+
+            #endregion
+
+
+            #region HoveredForegroundProperty
+
+            public static readonly DependencyProperty NormalForegroundProperty =
+                        DependencyProperty.RegisterAttached(
+                                "NormalForeground",
+                                typeof(Brush),
+                                typeof(ButtonChameleon),
+                                new FrameworkPropertyMetadata(
+                                    null,
+                                    FrameworkPropertyMetadataOptions.AffectsRender |
+                                    FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
+                                    FrameworkPropertyMetadataOptions.Inherits // because attached to parent template
+                                    ));
+
+            public Brush NormalForeground
+        {
+                get => (Brush)GetValue(NormalForegroundProperty);
+                set => SetValue(NormalForegroundProperty, value);
+            }
+
+            public static void SetNormalForeground(DependencyObject element, Brush value)
+            {
+                if (element == null)
+                {
+                    throw new ArgumentNullException(nameof(element));
+                }
+
+                element.SetValue(NormalForegroundProperty, value);
+            }
+
+            public static Brush GetNormalForeground(DependencyObject element)
+            {
+                if (element == null)
+                {
+                    throw new ArgumentNullException(nameof(element));
+                }
+
+                return (Brush)element.GetValue(NormalForegroundProperty);
+            }
+
+            #endregion
+
+        #endregion
+
+
         #region CLR Properties
 
         private static readonly object _lock = new object();
@@ -436,7 +574,7 @@ namespace Agbm.Wpf.CustomControls
                 To = HoveredBackground,
                 Default = NormalBackgroundBrush,
                 Duration = duration,
-                DefaultPercent = MOUSE_OVER_PERCENT,
+                DefaultPercent = HOVER_PERCENT,
                 ColorHeights = _colorHeights
             };
 
@@ -677,6 +815,19 @@ namespace Agbm.Wpf.CustomControls
                 }
 
                 return null;
+            }
+        }
+
+
+        private Brush ForegroundOverlay
+        {
+            get {
+
+                if ( (RenderMouseOver || RenderPressed) && HoveredForeground != null  ) {
+                    return HoveredForeground;
+                }
+
+                return NormalForeground;
             }
         }
 
