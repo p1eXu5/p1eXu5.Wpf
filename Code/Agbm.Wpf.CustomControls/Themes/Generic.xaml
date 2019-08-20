@@ -7,6 +7,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Agbm.Wpf.CustomControls;component/Themes/Colors.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Agbm.Wpf.CustomControls;component/Themes/ChameleonButtonStyle.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Agbm.Wpf.CustomControls;component/Themes/TetrisWindowStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type local:CircleDiagramControl}">
@@ -110,6 +111,4 @@
         </Setter>
     </Style>
 
-
-    
 </ResourceDictionary>

@@ -2,14 +2,19 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:s="clr-namespace:System;assembly=mscorlib"
                     xmlns:local="clr-namespace:Agbm.Wpf.CustomControls">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="TetrisIcons.xaml"></ResourceDictionary>
+    </ResourceDictionary.MergedDictionaries>
 
-    <Style TargetType="{x:Type Button}">
+    <Style x:Key="{x:Type Button}" TargetType="{x:Type Button}">
         <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="Foreground" Value="#555555"></Setter>
         <Setter Property="local:ButtonChameleon.HoveredForeground" Value="Black" />
         <Setter Property="local:ButtonChameleon.NormalForeground" Value="{Binding RelativeSource={RelativeSource Self}, Path=Foreground}" />
+        <Setter Property="Background" Value="#00000000"></Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ButtonBase}">
@@ -62,6 +67,24 @@
         </Setter>
     </Style>
 
+    <Style x:Key="st_PathButton" TargetType="{x:Type Path}" >
+        <Setter Property="Stroke" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ButtonBase}, Path=Foreground}" />
+    </Style>
 
+    <Style x:Key="st_PathClose" TargetType="{x:Type Path}" BasedOn="{StaticResource st_PathButton}">
+        <Setter Property="Data" Value="{StaticResource gm_Close}" />
+    </Style>
+
+    <Style x:Key="st_PathMaximize" TargetType="{x:Type Path}" BasedOn="{StaticResource st_PathButton}">
+        <Setter Property="Data" Value="{StaticResource gm_Maximize}" />
+    </Style>
+
+    <Style x:Key="st_PathMinimize" TargetType="{x:Type Path}" BasedOn="{StaticResource st_PathButton}">
+        <Setter Property="Data" Value="{StaticResource gm_Minimize}" />
+    </Style>
+
+    <Style x:Key="st_PathRestore" TargetType="{x:Type Path}" BasedOn="{StaticResource st_PathButton}">
+        <Setter Property="Data" Value="{StaticResource gm_Restore}" />
+    </Style>
 
 </ResourceDictionary>
