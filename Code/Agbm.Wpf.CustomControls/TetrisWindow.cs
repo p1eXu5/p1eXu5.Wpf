@@ -158,8 +158,7 @@ namespace Agbm.Wpf.CustomControls
                 CloseButton.Command = WindowCommands.Close;
             }
 
-            var header = GetTemplateChild("PART_HeaderBorder") as Border;
-            if ( header != null ) {
+            if ( GetTemplateChild("PART_HeaderBorder") is Border header ) {
                 header.MouseDown += Header_MouseDown;
             }
 
