@@ -95,8 +95,6 @@ namespace Agbm.Wpf.CustomControls
         {
             var wnd = (TetrisWindow)sender;
             wnd.WindowState = WindowState.Maximized;
-            wnd.MaximizeButton.Visibility = Visibility.Collapsed;
-            wnd.RestoreButton.Visibility = Visibility.Visible;
         }
 
         private static void Restore_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -164,6 +162,8 @@ namespace Agbm.Wpf.CustomControls
             if ( header != null ) {
                 header.MouseDown += Header_MouseDown;
             }
+
+            SwitchMaximazeRestoreButtons();
         }
 
         #endregion
@@ -198,6 +198,24 @@ namespace Agbm.Wpf.CustomControls
         private void OnStateChanged( object sender, EventArgs e )
         {
             CommandManager.InvalidateRequerySuggested();
+            SwitchMaximazeRestoreButtons();
+        }
+
+        private void SwitchMaximazeRestoreButtons()
+        {
+            if ( MaximizeButton != null && RestoreButton != null ) 
+            {
+                if ( WindowState == WindowState.Maximized ) 
+                {
+                    MaximizeButton.Visibility = Visibility.Collapsed;
+                    RestoreButton.Visibility = Visibility.Visible;
+                }
+                else if ( WindowState == WindowState.Normal ) 
+                {
+                    RestoreButton.Visibility = Visibility.Collapsed;
+                    MaximizeButton.Visibility = Visibility.Visible;
+                }
+            }
         }
 
         private void OnSizeChanged( object sender, SizeChangedEventArgs e )
