@@ -14,9 +14,10 @@
                 <Setter Property="WindowState" Value="Normal" />
                 <Setter Property="WindowChrome.WindowChrome">
                     <Setter.Value>
-                        <WindowChrome GlassFrameThickness="1"
-                              ResizeBorderThickness="4"
-                              CaptionHeight="0" >
+                        <WindowChrome GlassFrameThickness="0"
+                                      CornerRadius="0"
+                                      ResizeBorderThickness="4"
+                                      CaptionHeight="0" >
                         </WindowChrome>
                     </Setter.Value>
                 </Setter>
@@ -29,7 +30,8 @@
                                            LastChildFill="True"
                                            >
                                     <!-- Title bar -->
-                                    <DockPanel DockPanel.Dock="Top" x:Name="IconTitleCaptionBar" 
+                                    <DockPanel DockPanel.Dock="Top" 
+                                               x:Name="IconTitleCaptionBar" 
                                                Height="{Binding Source={x:Static shell:SystemParameters.CaptionHeight}}"
                                                Background="Bisque"
                                                >
@@ -37,10 +39,9 @@
                                                Source="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}"  
                                                VerticalAlignment="Center" HorizontalAlignment="Left"  
                                                Width="{Binding Source={x:Static shell:SystemParameters.SmallIconWidth}}"  
-                                               WindowChrome.IsHitTestVisibleInChrome="True"
-                                               />
+                                        />
 
-                                        <StackPanel DockPanel.Dock="Right" WindowChrome.IsHitTestVisibleInChrome="True" Background="Aquamarine"
+                                        <StackPanel DockPanel.Dock="Right" Background="Aquamarine"
                                                     VerticalAlignment="Stretch"
                                                     HorizontalAlignment="Center"
                                                     Width="Auto"
@@ -54,13 +55,17 @@
 
                                         </StackPanel>
 
-                                        <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Title}"   
-                                                   VerticalAlignment="Top" HorizontalAlignment="Left"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   />
+                                        <Border x:Name="PART_HeaderBorder" HorizontalAlignment="Stretch" Background="Transparent">
+
+                                            <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Title}"   
+                                                       VerticalAlignment="Top" HorizontalAlignment="Left"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       />
+                                        </Border>
 
                                     </DockPanel>
 
+                                    <!-- Content -->
                                     <AdornerDecorator>
                                         <ContentPresenter />
                                     </AdornerDecorator>

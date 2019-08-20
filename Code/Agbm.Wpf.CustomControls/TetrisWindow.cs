@@ -60,7 +60,8 @@ namespace Agbm.Wpf.CustomControls
             //double currentDPIScaleFactor = (double)SystemHelper.GetCurrentDPIScaleFactor();
             //Screen screen = Screen.FromHandle((new WindowInteropHelper(this)).Handle);
 
-            //base.SizeChanged += new SizeChangedEventHandler(this.OnSizeChanged);
+            SizeChanged += OnSizeChanged;
+            StateChanged += OnStateChanged;
             //base.StateChanged += new EventHandler(this.OnStateChanged);
             //base.Loaded += new RoutedEventHandler(this.OnLoaded);
             //Rectangle workingArea = screen.WorkingArea;
@@ -71,22 +72,9 @@ namespace Agbm.Wpf.CustomControls
             //this.AddHandler(Window.MouseMoveEvent, new System.Windows.Input.MouseEventHandler(this.OnMouseMove));
         }
 
-        private static void SetUpCommands()
-        {
-            CommandManager.RegisterClassCommandBinding( typeof(TetrisWindow),
-                new CommandBinding( WindowCommands.Maximize, Maximize_Executed, Maximize_CanExecute ));
-
-            CommandManager.RegisterClassCommandBinding(typeof(TetrisWindow),
-                new CommandBinding(WindowCommands.Restore, Restore_Executed, Restore_CanExecute));
-
-            CommandManager.RegisterClassCommandBinding(typeof(TetrisWindow),
-                new CommandBinding(WindowCommands.Minimize, Minimize_Executed, Minimize_CanExecute));
-
-            CommandManager.RegisterClassCommandBinding(typeof(TetrisWindow),
-                new CommandBinding(WindowCommands.Close, Close_Executed ));
-        }
 
         #region Properties
+
         private Button MinimizeButton { get; set; }
         private Button MaximizeButton { get; set; }
         private Button RestoreButton { get; set; }
@@ -94,16 +82,6 @@ namespace Agbm.Wpf.CustomControls
 
         #endregion
 
-        private void OnLoaded( object sender, RoutedEventArgs args )
-        {
-            var hwnd = (new WindowInteropHelper( this )).Handle;
-
-            if ( WindowState == WindowState.Maximized ) 
-            {
-                if ( MaximizeButton != null ) MinimizeButton.Visibility = Visibility.Collapsed;
-                if ( RestoreButton != null ) RestoreButton.Visibility = Visibility.Visible;
-            }
-        }
 
         #region Commands
 
@@ -138,7 +116,7 @@ namespace Agbm.Wpf.CustomControls
         private static void Minimize_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             var wnd = (TetrisWindow)sender;
-            e.CanExecute = wnd.WindowState == WindowState.Normal;
+            e.CanExecute = wnd.WindowState != WindowState.Minimized;
         }
 
         private static void Minimize_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -181,8 +159,57 @@ namespace Agbm.Wpf.CustomControls
             if (CloseButton != null){
                 CloseButton.Command = WindowCommands.Close;
             }
+
+            var header = GetTemplateChild("PART_HeaderBorder") as Border;
+            if ( header != null ) {
+                header.MouseDown += Header_MouseDown;
+            }
         }
 
         #endregion
+
+
+        private static void SetUpCommands()
+        {
+            CommandManager.RegisterClassCommandBinding( typeof(TetrisWindow),
+                new CommandBinding( WindowCommands.Maximize, Maximize_Executed, Maximize_CanExecute ));
+
+            CommandManager.RegisterClassCommandBinding(typeof(TetrisWindow),
+                new CommandBinding(WindowCommands.Restore, Restore_Executed, Restore_CanExecute));
+
+            CommandManager.RegisterClassCommandBinding(typeof(TetrisWindow),
+                new CommandBinding(WindowCommands.Minimize, Minimize_Executed, Minimize_CanExecute));
+
+            CommandManager.RegisterClassCommandBinding(typeof(TetrisWindow),
+                new CommandBinding(WindowCommands.Close, Close_Executed ));
+        }
+
+        private void OnLoaded( object sender, RoutedEventArgs args )
+        {
+            var hwnd = (new WindowInteropHelper( this )).Handle;
+
+            if ( WindowState == WindowState.Maximized ) 
+            {
+                if ( MaximizeButton != null ) MinimizeButton.Visibility = Visibility.Collapsed;
+                if ( RestoreButton != null ) RestoreButton.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void OnStateChanged( object sender, EventArgs e )
+        {
+            CommandManager.InvalidateRequerySuggested();
+        }
+
+        private void OnSizeChanged( object sender, SizeChangedEventArgs e )
+        {
+        }
+
+        private void Header_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                this.DragMove();
+            }
+        }
     }
 }
