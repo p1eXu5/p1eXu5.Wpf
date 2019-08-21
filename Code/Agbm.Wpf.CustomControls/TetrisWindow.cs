@@ -1,54 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Shell;
 using Agbm.Wpf.CustomControls.Infrastructure;
-using Microsoft.Win32;
+using static Agbm.Wpf.CustomControls.Helpers.WindowHelpers;
 
 namespace Agbm.Wpf.CustomControls
 {
-    /// <summary>
-    /// Follow steps 1a or 1b and then 2 to use this custom control in a XAML file.
-    ///
-    /// Step 1a) Using this custom control in a XAML file that exists in the current project.
-    /// Add this XmlNamespace attribute to the root element of the markup file where it is 
-    /// to be used:
-    ///
-    ///     xmlns:MyNamespace="clr-namespace:Agbm.Wpf.CustomControls"
-    ///
-    ///
-    /// Step 1b) Using this custom control in a XAML file that exists in a different project.
-    /// Add this XmlNamespace attribute to the root element of the markup file where it is 
-    /// to be used:
-    ///
-    ///     xmlns:MyNamespace="clr-namespace:Agbm.Wpf.CustomControls;assembly=Agbm.Wpf.CustomControls"
-    ///
-    /// You will also need to add a project reference from the project where the XAML file lives
-    /// to this project and Rebuild to avoid compilation errors:
-    ///
-    ///     Right click on the target project in the Solution Explorer and
-    ///     "Add Reference"->"Projects"->[Browse to and select this project]
-    ///
-    ///
-    /// Step 2)
-    /// Go ahead and use your control in the XAML file.
-    ///
-    ///     <MyNamespace:TetrisWindow/>
-    ///
-    /// </summary>
+    
     public class TetrisWindow : Window
     {
+        private double _lastWidth, _lastHeight;
+
         static TetrisWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(TetrisWindow), new FrameworkPropertyMetadata(typeof(TetrisWindow)));
@@ -57,28 +22,21 @@ namespace Agbm.Wpf.CustomControls
 
         public TetrisWindow()
         {
-            //double currentDPIScaleFactor = (double)SystemHelper.GetCurrentDPIScaleFactor();
-            //Screen screen = Screen.FromHandle((new WindowInteropHelper(this)).Handle);
-
             SizeChanged += OnSizeChanged;
             StateChanged += OnStateChanged;
-            //base.StateChanged += new EventHandler(this.OnStateChanged);
-            //base.Loaded += new RoutedEventHandler(this.OnLoaded);
-            //Rectangle workingArea = screen.WorkingArea;
-            //base.MaxHeight = (double)(workingArea.Height + 16) / currentDPIScaleFactor;
-
-            //SystemEvents.DisplaySettingsChanged += new EventHandler(this.SystemEvents_DisplaySettingsChanged);
-            //this.AddHandler(Window.MouseLeftButtonUpEvent, new MouseButtonEventHandler(this.OnMouseButtonUp), true);
-            //this.AddHandler(Window.MouseMoveEvent, new System.Windows.Input.MouseEventHandler(this.OnMouseMove));
+            Loaded += OnLoaded;
         }
 
 
         #region Properties
 
+        private IntPtr Hwnd => new WindowInteropHelper( this ).Handle;
+
         private Button MinimizeButton { get; set; }
         private Button MaximizeButton { get; set; }
         private Button RestoreButton { get; set; }
         private Button CloseButton { get; set; }
+        private Border WindowBorder { get; set; }
 
         #endregion
 
@@ -160,13 +118,97 @@ namespace Agbm.Wpf.CustomControls
 
             if ( GetTemplateChild("PART_HeaderBorder") is Border header ) {
                 header.MouseDown += Header_MouseDown;
+                header.MouseLeftButtonDown += Header_MouseLeftButtonDown;
+
             }
 
-            SwitchMaximazeRestoreButtons();
+            WindowBorder = GetTemplateChild("PART_WindowBorder") as Border;
+
+
         }
 
         #endregion
 
+
+        #region Handlers
+
+        private void OnLoaded( object sender, RoutedEventArgs args )
+        {
+            SwitchMaximazeRestoreButtons();
+            _lastHeight = Height;
+            _lastWidth = Width;
+        }
+        private void OnStateChanged( object sender, EventArgs e )
+        {
+            CommandManager.InvalidateRequerySuggested();
+            SwitchMaximazeRestoreButtons();
+
+            if ( WindowState == WindowState.Maximized ) {
+                _lastHeight = ActualHeight;
+                _lastWidth = ActualWidth;
+            }
+            else if ( WindowState == WindowState.Normal ) {
+                Width = _lastWidth;
+                Height = _lastHeight;
+            }
+        }
+        private void OnSizeChanged( object sender, SizeChangedEventArgs e )
+        {
+            if ( WindowState == WindowState.Maximized ) 
+            {
+                var hMonitor = MonitorFromWindow( Hwnd, MonitorDwFlags.MONITOR_DEFAULTTONULL );
+
+                MONITORINFO mi;
+
+                unsafe {
+                    mi = new MONITORINFO() {
+                        cbSize = ( uint )sizeof( MONITORINFO )
+                    };
+                }
+
+                if ( GetMonitorInfoA( hMonitor, ref mi ) ) {
+
+                    Thickness t = new Thickness(0);
+                    if ( ActualWidth > mi.rcMonitor.left ) {
+                        t.Left = t.Right = (ActualWidth - (mi.rcMonitor.right - mi.rcMonitor.left) ) / 2;
+                    }
+
+                    if ( ActualHeight > mi.rcMonitor.bottom ) {
+                        t.Top = t.Bottom = (ActualHeight - (mi.rcMonitor.bottom - mi.rcMonitor.top) ) / 2;
+                    }
+
+                    WindowBorder.Padding = t;
+                }
+            }
+            else  {
+
+                WindowBorder.Padding = WindowChrome.GetWindowChrome( this ).ResizeBorderThickness;
+            }
+        }
+        private void Header_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                this.DragMove();
+            }
+        }
+        private void Header_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                if ( WindowCommands.Maximize.CanExecute( null, this ) ) {
+                    WindowCommands.Maximize.Execute( null, this );
+                }
+                else if ( WindowCommands.Restore.CanExecute( null, this ) ) {
+                    WindowCommands.Restore.Execute( null, this );
+                }
+            }
+        }
+
+        #endregion
+
+
+        #region Privates
 
         private static void SetUpCommands()
         {
@@ -182,51 +224,22 @@ namespace Agbm.Wpf.CustomControls
             CommandManager.RegisterClassCommandBinding(typeof(TetrisWindow),
                 new CommandBinding(WindowCommands.Close, Close_Executed ));
         }
-
-        private void OnLoaded( object sender, RoutedEventArgs args )
+        private void SwitchMaximazeRestoreButtons()
         {
-            var hwnd = (new WindowInteropHelper( this )).Handle;
+            if ( MaximizeButton == null || RestoreButton == null ) return;
 
             if ( WindowState == WindowState.Maximized ) 
             {
-                if ( MaximizeButton != null ) MinimizeButton.Visibility = Visibility.Collapsed;
-                if ( RestoreButton != null ) RestoreButton.Visibility = Visibility.Visible;
+                MaximizeButton.Visibility = Visibility.Collapsed;
+                RestoreButton.Visibility = Visibility.Visible;
             }
-        }
-
-        private void OnStateChanged( object sender, EventArgs e )
-        {
-            CommandManager.InvalidateRequerySuggested();
-            SwitchMaximazeRestoreButtons();
-        }
-
-        private void SwitchMaximazeRestoreButtons()
-        {
-            if ( MaximizeButton != null && RestoreButton != null ) 
+            else if ( WindowState == WindowState.Normal ) 
             {
-                if ( WindowState == WindowState.Maximized ) 
-                {
-                    MaximizeButton.Visibility = Visibility.Collapsed;
-                    RestoreButton.Visibility = Visibility.Visible;
-                }
-                else if ( WindowState == WindowState.Normal ) 
-                {
-                    RestoreButton.Visibility = Visibility.Collapsed;
-                    MaximizeButton.Visibility = Visibility.Visible;
-                }
+                RestoreButton.Visibility = Visibility.Collapsed;
+                MaximizeButton.Visibility = Visibility.Visible;
             }
         }
 
-        private void OnSizeChanged( object sender, SizeChangedEventArgs e )
-        {
-        }
-
-        private void Header_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                this.DragMove();
-            }
-        }
+        #endregion
     }
 }

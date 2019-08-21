@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -54,6 +55,7 @@
     <Compile Include="CircleDiagramControl.cs" />
     <Compile Include="Exceptions\PercentException.cs" />
     <Compile Include="Helpers\ColorExtensions.cs" />
+    <Compile Include="Helpers\WindowHelpers.cs" />
     <Compile Include="Infrastructure\WindowCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
