@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Agbm.Wpf.MvvmBaseLibrary</RootNamespace>
     <AssemblyName>Agbm.Wpf.MvvmBaseLibrary</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,13 +46,17 @@
   <ItemGroup>
     <Compile Include="CloseRequestedEventArgs.cs" />
     <Compile Include="DialogViewModel.cs" />
+    <Compile Include="IAsyncCommand.cs" />
     <Compile Include="IDialog.cs" />
     <Compile Include="IDialogCloseRequested.cs" />
     <Compile Include="IDialogRepository.cs" />
+    <Compile Include="IErrorHandler.cs" />
+    <Compile Include="MvvmAsyncCommand.cs" />
     <Compile Include="MvvmCommand.cs" />
     <Compile Include="NotifyingObject.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TaskExtensions.cs" />
     <Compile Include="ViewModel.cs" />
     <Compile Include="DialogRepository.cs" />
   </ItemGroup>

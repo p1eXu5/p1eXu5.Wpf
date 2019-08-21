@@ -18,6 +18,7 @@ namespace Agbm.Wpf.CustomControls
 
         private Grid _grid;
         private readonly Queue< SolidColorBrush > _brushes;
+        private Path[] _paths;
 
         static CircleDiagramControl ()
         {
@@ -36,11 +37,20 @@ namespace Agbm.Wpf.CustomControls
                 new SolidColorBrush( new Color(){ R = 0xe5, G = 0xde, B = 0x26, A = 0xFF } ), // e5de26
                 new SolidColorBrush( new Color(){ R = 0xe5, G = 0x26, B = 0x7b, A = 0xFF } ), // e5267b
                 new SolidColorBrush( new Color(){ R = 0xad, G = 0xe5, B = 0x26, A = 0xFF } ), // ade526
+                new SolidColorBrush( new Color(){ R = 0x49, G = 0x86, B = 0xbf, A = 0xFF } ), // 4986bf
+                new SolidColorBrush( new Color(){ R = 0xbb, G = 0x8e, B = 0x53, A = 0xFF } ), // bb8e53
+                new SolidColorBrush( new Color(){ R = 0x72, G = 0xcf, B = 0x63, A = 0xFF } ), // 72cf63
+                new SolidColorBrush( new Color(){ R = 0xb0, G = 0x56, B = 0x56, A = 0xFF } ), // b056b6
+                new SolidColorBrush( new Color(){ R = 0x59, G = 0xb7, B = 0xb8, A = 0xFF } ), // 59b7b8
+                new SolidColorBrush( new Color(){ R = 0xc3, G = 0xbf, B = 0x4a, A = 0xFF } ), // c3bf4a
+                new SolidColorBrush( new Color(){ R = 0xcd, G = 0x44, B = 0x81, A = 0xFF } ), // cd4481
             });
 
             foreach ( var brush in _brushes ) {
                 brush.Freeze();
             }
+
+            _paths = new Path[0];
         }
 
         public string Annotation
@@ -55,33 +65,81 @@ namespace Agbm.Wpf.CustomControls
 
 
 
+        public double Indicator
+        {
+            get { return (double)GetValue(IndicatorProperty); }
+            set { SetValue(IndicatorProperty, value ); }
+        }
+
+        // Using a DependencyProperty as the backing store for Indicator.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IndicatorProperty =
+            DependencyProperty.Register("Indicator", typeof(double), typeof(CircleDiagramControl), new PropertyMetadata(0.0));
+
+
+
+        public string IndicatorTip
+        {
+            get { return (string)GetValue(IndicatorTipProperty); }
+            set { SetValue(IndicatorTipProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IndicatorTip.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IndicatorTipProperty =
+            DependencyProperty.Register("IndicatorTip", typeof(string), typeof(CircleDiagramControl), new PropertyMetadata(""));
+
+
+
 
         protected override void OnItemsSourceChanged ( IEnumerable oldValue, IEnumerable newValue )
         {
-            var nums = newValue.Cast<(double val,string ann)>().ToArray();
+            if ( oldValue != null ) {
+                foreach ( var path in _paths ) {
 
-            if ( nums.Length == 0 ) return;
-
-
-            var sum = nums.Aggregate( 0.0d, (s, t) => s + t.val );
-            var oneDegree = 360 / sum;
-            double startDegree = 0;
-
-            for ( int i = 0; i < nums.Length; ++i ) {
-
-                var endDegree = startDegree + nums[ i ].val * oneDegree;
-                Path path = GetPath( nums, i, startDegree, endDegree );
-                _grid.Children.Add( path );
-
-                startDegree = endDegree;
+                    _grid.Children.Remove( path );
+                }
             }
+
+
+            if ( newValue != null ) {
+
+                var nums = newValue.Cast< (double val, string ann) >().ToArray();
+                if ( nums.Length == 0 ) return;
+
+
+                var sum = nums.Aggregate( 0.0d, ( s, t ) => s + t.val );
+                var oneDegree = 360 / sum;
+                double startDegree = 0;
+
+                var notZeroCount = nums.Count( n => n.val > 0.0 );
+                if ( notZeroCount == 0 ) { return; }
+                _paths = new Path[ notZeroCount ];
+                var pathIndex = 0;
+
+                for ( int i = 0; i < nums.Length; ++i ) {
+
+                    if ( nums[ i ].val.Equals( 0.0 ) ) {
+                        GetBrush();
+                        continue;
+                    }
+
+                    var endDegree = startDegree + nums[ i ].val * oneDegree;
+                    _paths[ pathIndex ] = GetPath( nums, pathIndex, startDegree, endDegree );
+                    _grid.Children.Add( _paths[ pathIndex ] );
+                    ++pathIndex;
+
+                    startDegree = endDegree;
+                }
+            }
+
         }
 
         public override void OnApplyTemplate ()
         {
             base.OnApplyTemplate();
 
-            _grid = (Grid)GetTemplateChild( "PART_Container" ) ?? new Grid();
+            if ( _grid == null ) {
+                _grid = ( Grid )GetTemplateChild( "PART_Container" ) ?? new Grid();
+            }
         }
 
         private Path GetPath ( (double val,string ann)[] arr, int ind, double startDegree, double endDegree )
