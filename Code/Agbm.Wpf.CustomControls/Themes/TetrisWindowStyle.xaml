@@ -12,6 +12,8 @@
                 <Setter Property="WindowStyle" Value="SingleBorderWindow" />
                 <Setter Property="AllowsTransparency" Value="False" />
                 <Setter Property="WindowState" Value="Normal" />
+                <Setter Property="local:ButtonChameleon.HoveredBackground" Value="#33FFFFFF"></Setter>
+                <Setter Property="local:ButtonChameleon.NormalForeground" Value="{Binding RelativeSource={RelativeSource Self}, Path=Foreground}" />
                 <Setter Property="WindowChrome.WindowChrome">
                     <Setter.Value>
                         <WindowChrome GlassFrameThickness="0"
@@ -34,24 +36,27 @@
                                     <DockPanel DockPanel.Dock="Top" 
                                                x:Name="IconTitleCaptionBar" 
                                                Height="{Binding Source={x:Static shell:SystemParameters.CaptionHeight}}"
-                                               Background="Bisque"
-                                               >
+                                    >
                                         <Image DockPanel.Dock="Left" 
                                                Source="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}"  
                                                VerticalAlignment="Center" HorizontalAlignment="Left"  
                                                Width="{Binding Source={x:Static shell:SystemParameters.SmallIconWidth}}"  
                                         />
 
-                                        <StackPanel DockPanel.Dock="Right" Background="Aquamarine"
+                                        <StackPanel DockPanel.Dock="Right" 
                                                     VerticalAlignment="Stretch"
                                                     HorizontalAlignment="Center"
                                                     Width="Auto"
                                                     Orientation="Horizontal"
-                                                    >
+                                        >
                                             <Button x:Name="PART_MinimizeButton" Width="34"><Path Style="{StaticResource st_PathMinimize}" /></Button>
                                             <Button x:Name="PART_MaximizeButton" Width="34"><Path Style="{StaticResource st_PathMaximize}" /></Button>
                                             <Button x:Name="PART_RestoreButton" Width="34" Visibility="Collapsed" ><Path Style="{StaticResource st_PathRestore}" /></Button>
-                                            <Button x:Name="PART_CloseButton" Width="34"><Path Style="{StaticResource st_PathClose}" /></Button>
+                                            <Button x:Name="PART_CloseButton" Width="34"
+                                                    local:ButtonChameleon.HoveredBackground="#E60000"
+                                                    local:ButtonChameleon.PressedBackground="#E60000"
+                                                    ><Path Style="{StaticResource st_PathClose}" />
+                                            </Button>
 
 
                                         </StackPanel>
@@ -59,7 +64,7 @@
                                         <Border x:Name="PART_HeaderBorder" HorizontalAlignment="Stretch" Background="Transparent">
 
                                             <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Title}"   
-                                                       VerticalAlignment="Top" HorizontalAlignment="Left"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Left"
                                                        TextTrimming="CharacterEllipsis"
                                                        />
                                         </Border>

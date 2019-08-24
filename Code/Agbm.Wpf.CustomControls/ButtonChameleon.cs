@@ -36,6 +36,7 @@ namespace Agbm.Wpf.CustomControls
 
         #endregion
 
+
         #region DynamicProperties
 
             #region BackgroundProperty
@@ -453,11 +454,14 @@ namespace Agbm.Wpf.CustomControls
             #region ForegroundProperty
 
             public static readonly DependencyProperty ForegroundProperty =
-                        Control.ForegroundProperty.AddOwner(
+                        TextElement.ForegroundProperty.AddOwner(
                                 typeof(ButtonChameleon),
                                 new FrameworkPropertyMetadata(
                                         null,
+                                        FrameworkPropertyMetadataOptions.AffectsRender |
+                                        FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
                                         FrameworkPropertyMetadataOptions.Inherits));
+
 
             /// <summary>
             /// The Background property defines the brush used to fill the background of the button.
@@ -514,7 +518,7 @@ namespace Agbm.Wpf.CustomControls
             #endregion
 
 
-            #region HoveredForegroundProperty
+            #region NormalForegroundProperty
 
             public static readonly DependencyProperty NormalForegroundProperty =
                         DependencyProperty.RegisterAttached(
@@ -525,8 +529,28 @@ namespace Agbm.Wpf.CustomControls
                                     null,
                                     FrameworkPropertyMetadataOptions.AffectsRender |
                                     FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
-                                    FrameworkPropertyMetadataOptions.Inherits // because attached to parent template
+                                    FrameworkPropertyMetadataOptions.Inherits, NormalForegroundChanged // because attached to parent template
                                     ));
+
+            private static void NormalForegroundChanged( DependencyObject d, DependencyPropertyChangedEventArgs e )
+            {
+                if ( !(d is ButtonChameleon chameleon)) return;
+
+                if ( chameleon.HoveredForeground != null || e.NewValue == null ) return;
+                if ( e.NewValue is SolidColorBrush brush ) {
+                    if ( brush.Color.GetColorHeight() == ColorHeights.Higher ) {
+                        chameleon.HoveredForeground = new SolidColorBrush( brush.Color.ToBrighten( 100 ));
+                    }
+                    else {
+                        chameleon.HoveredForeground = new SolidColorBrush( brush.Color.ToDarken( 100 ));
+                    }
+
+                    if ( chameleon.HoveredForeground.CanFreeze ) {
+                        chameleon.HoveredForeground.Freeze();
+                    }
+                }
+
+            }
 
             public Brush NormalForeground
         {

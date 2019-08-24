@@ -11,9 +11,6 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="Foreground" Value="#555555"></Setter>
-        <Setter Property="local:ButtonChameleon.HoveredForeground" Value="Black" />
-        <Setter Property="local:ButtonChameleon.NormalForeground" Value="{Binding RelativeSource={RelativeSource Self}, Path=Foreground}" />
         <Setter Property="Background" Value="#00000000"></Setter>
         <Setter Property="Template">
             <Setter.Value>
@@ -34,6 +31,7 @@
                                           ContentStringFormat="{TemplateBinding ContentStringFormat}"
                                           RecognizesAccessKey="True"
                                           SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                          TextElement.Foreground="{Binding ElementName=Chameleon, Path=Foreground}"
                                           />
                     </local:ButtonChameleon>
 
@@ -68,7 +66,7 @@
     </Style>
 
     <Style x:Key="st_PathButton" TargetType="{x:Type Path}" >
-        <Setter Property="Stroke" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ButtonBase}, Path=Foreground}" />
+        <Setter Property="Stroke" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=FrameworkElement}, Path=(TextElement.Foreground)}" />
     </Style>
 
     <Style x:Key="st_PathClose" TargetType="{x:Type Path}" BasedOn="{StaticResource st_PathButton}">
