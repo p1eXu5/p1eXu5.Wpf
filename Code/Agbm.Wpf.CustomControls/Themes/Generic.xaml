@@ -8,6 +8,7 @@
         <ResourceDictionary Source="/Agbm.Wpf.CustomControls;component/Themes/Colors.xaml" />
         <ResourceDictionary Source="/Agbm.Wpf.CustomControls;component/Themes/CircleDiagramControlStyle.xaml" />
         <ResourceDictionary Source="/Agbm.Wpf.CustomControls;component/Themes/TetrisWindowStyle.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Agbm.Wpf.CustomControls;component/Themes/GameMenuSelectorStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
