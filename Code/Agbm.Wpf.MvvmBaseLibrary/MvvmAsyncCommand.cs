@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -11,7 +12,7 @@ namespace Agbm.Wpf.MvvmBaseLibrary
         private readonly Predicate< object > _canExecute;
         private readonly IErrorHandler _errorHandler;
 
-        private bool _isExecuting;
+        private int _isExecuting = 0;
 
         public MvvmAsyncCommand ( Func< object, Task > execute, Predicate< object > canExecute = null, IErrorHandler errorHandler = null )
         {
@@ -26,19 +27,21 @@ namespace Agbm.Wpf.MvvmBaseLibrary
 
         public bool CanExecute ( object parameter )
         {
-            return !_isExecuting && (_canExecute?.Invoke( parameter ) ?? true);
+            return _isExecuting == 0 && (_canExecute?.Invoke( parameter ) ?? true);
         }
 
 
         public async Task ExecuteAsync ( object parameter )
         {
-            if ( CanExecute( parameter ) ) {
+            if ( CanExecute( parameter ) ) 
+            {
+                if ( Interlocked.CompareExchange( ref _isExecuting, 1, 0 ) == 1 ) return;
+
                 try {
-                    _isExecuting = true;
                     await _execute( parameter );
                 }
                 finally {
-                    _isExecuting = false;
+                    Volatile.Write( ref _isExecuting, 0 );
                 }
             }
         }
@@ -48,9 +51,9 @@ namespace Agbm.Wpf.MvvmBaseLibrary
             CanExecuteChanged?.Invoke( this, EventArgs.Empty );
         }
 
-        public async Task ExecuteAsync ()
+        public Task ExecuteAsync ()
         {
-            await ExecuteAsync( null );
+            return ExecuteAsync( null );
         }
 
 
