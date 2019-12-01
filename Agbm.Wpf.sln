@@ -5,15 +5,15 @@ VisualStudioVersion = 16.0.29123.89
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{453536B9-69ED-44C8-858B-141639E353D8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D6678510-A16D-4F58-B478-5B4ABAFDEBB6}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agbm.Wpf.MvvmBaseLibrary", "src\Agbm.Wpf.MvvmBaseLibrary\Agbm.Wpf.MvvmBaseLibrary.csproj", "{B96C5988-8C79-4B2E-A970-EA7F0077C951}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agbm.Wpf.MvvmBaseLibrary.Tests", "tests\Agbm.Wpf.MvvmBaseLibrary.Tests\Agbm.Wpf.MvvmBaseLibrary.Tests.csproj", "{18C0EFD5-AE68-493F-BE8C-101441A05B9F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agbm.Wpf.CustomControls", "src\Agbm.Wpf.CustomControls\Agbm.Wpf.CustomControls.csproj", "{A0194F75-5D70-4040-B8DF-607B13C3CA0B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9CF535FC-2735-4177-863D-6468D8DF783A}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agbm.Wpf.CustomControls.Tests", "tests\Agbm.Wpf.CustomControls.Tests\Agbm.Wpf.CustomControls.Tests.csproj", "{56FD3190-EBBE-4EE0-85BB-D866CC3BA4C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agbm.Wpf.MvvmBaseLibrary.Tests", "tests\Agbm.Wpf.MvvmBaseLibrary.Tests\Agbm.Wpf.MvvmBaseLibrary.Tests.csproj", "{18C0EFD5-AE68-493F-BE8C-101441A05B9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +25,6 @@ Global
 		{B96C5988-8C79-4B2E-A970-EA7F0077C951}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B96C5988-8C79-4B2E-A970-EA7F0077C951}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B96C5988-8C79-4B2E-A970-EA7F0077C951}.Release|Any CPU.Build.0 = Release|Any CPU
-		{18C0EFD5-AE68-493F-BE8C-101441A05B9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{18C0EFD5-AE68-493F-BE8C-101441A05B9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{18C0EFD5-AE68-493F-BE8C-101441A05B9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{18C0EFD5-AE68-493F-BE8C-101441A05B9F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A0194F75-5D70-4040-B8DF-607B13C3CA0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A0194F75-5D70-4040-B8DF-607B13C3CA0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0194F75-5D70-4040-B8DF-607B13C3CA0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -37,15 +33,19 @@ Global
 		{56FD3190-EBBE-4EE0-85BB-D866CC3BA4C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56FD3190-EBBE-4EE0-85BB-D866CC3BA4C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56FD3190-EBBE-4EE0-85BB-D866CC3BA4C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18C0EFD5-AE68-493F-BE8C-101441A05B9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18C0EFD5-AE68-493F-BE8C-101441A05B9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18C0EFD5-AE68-493F-BE8C-101441A05B9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18C0EFD5-AE68-493F-BE8C-101441A05B9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B96C5988-8C79-4B2E-A970-EA7F0077C951} = {453536B9-69ED-44C8-858B-141639E353D8}
-		{18C0EFD5-AE68-493F-BE8C-101441A05B9F} = {D6678510-A16D-4F58-B478-5B4ABAFDEBB6}
 		{A0194F75-5D70-4040-B8DF-607B13C3CA0B} = {453536B9-69ED-44C8-858B-141639E353D8}
-		{56FD3190-EBBE-4EE0-85BB-D866CC3BA4C5} = {D6678510-A16D-4F58-B478-5B4ABAFDEBB6}
+		{56FD3190-EBBE-4EE0-85BB-D866CC3BA4C5} = {9CF535FC-2735-4177-863D-6468D8DF783A}
+		{18C0EFD5-AE68-493F-BE8C-101441A05B9F} = {9CF535FC-2735-4177-863D-6468D8DF783A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4347A117-20D7-4BE4-9E87-6AE736ADAD2E}
