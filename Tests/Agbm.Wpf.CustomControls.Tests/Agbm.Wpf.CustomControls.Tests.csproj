@@ -54,7 +54,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTests\Helpers\ColorExtensionsTests.cs" />
   </ItemGroup>
@@ -62,8 +61,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Code\Agbm.Wpf.CustomControls\Agbm.Wpf.CustomControls.csproj">
-      <Project>{240f5ce1-e550-4702-a577-825244a750cf}</Project>
+    <ProjectReference Include="..\..\src\Agbm.Wpf.CustomControls\Agbm.Wpf.CustomControls.csproj">
+      <Project>{a0194f75-5d70-4040-b8df-607b13c3ca0b}</Project>
       <Name>Agbm.Wpf.CustomControls</Name>
     </ProjectReference>
   </ItemGroup>
