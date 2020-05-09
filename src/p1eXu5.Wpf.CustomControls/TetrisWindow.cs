@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Shell;
+using Agbm.Wpf.CustomControls.Infrastructure;
 using p1eXu5.Wpf.CustomControls.Infrastructure;
 using static p1eXu5.Wpf.CustomControls.Helpers.WindowHelpers;
 

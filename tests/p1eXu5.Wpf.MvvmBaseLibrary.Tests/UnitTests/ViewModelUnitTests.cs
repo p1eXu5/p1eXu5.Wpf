@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.ComponentModel;
-using NUnit.Framework;
 
 namespace p1eXu5.Wpf.MvvmBaseLibrary.Tests.UnitTests
 {
@@ -10,7 +10,7 @@ namespace p1eXu5.Wpf.MvvmBaseLibrary.Tests.UnitTests
         [Test]
         public void ViewModel_IsAbstract()
         {
-            Assert.That(typeof(ViewModel).IsAbstract);
+            Assert.That(typeof(ViewModelBase).IsAbstract);
         }
 
         [Test]
@@ -40,12 +40,12 @@ namespace p1eXu5.Wpf.MvvmBaseLibrary.Tests.UnitTests
 
         #region Factory
 
-        private ViewModel GetViewModel()
+        private ViewModelBase GetViewModel()
         {
             return new FakeViewModel();
         }
 
-        class FakeViewModel : ViewModel
+        class FakeViewModel : ViewModelBase
         { }
 
         #endregion

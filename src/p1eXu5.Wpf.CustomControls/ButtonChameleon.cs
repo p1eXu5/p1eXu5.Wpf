@@ -2,12 +2,8 @@
  * Changing the IsEnabled property causes the OnRender mehod to be called and disables the control events
  */
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -21,18 +17,18 @@ namespace p1eXu5.Wpf.CustomControls
     {
         #region Fields
 
-        private const double GAP = 1.0;
+        //private const double GAP = 1.0;
         private const byte HOVER_PERCENT = 12;
         private const byte PRESSED_PERCENT = 25;
 
-        private static readonly Duration _hoverDuration = new Duration( TimeSpan.FromSeconds( 0.3 ) );
-        private static readonly Duration _pressedDuration = new Duration( TimeSpan.FromSeconds( 0.1 ) );
+        private static readonly Duration HoverDuration = new Duration( TimeSpan.FromSeconds( 0.3 ) );
+        private static readonly Duration PressedDuration = new Duration( TimeSpan.FromSeconds( 0.1 ) );
         
 
         private ColorHeights[] _colorHeights;
 
-        private byte _mouseOverPercent = HOVER_PERCENT;
-        private byte _pressedPercent = PRESSED_PERCENT;
+        //private byte _mouseOverPercent = HOVER_PERCENT;
+        //private byte _pressedPercent = PRESSED_PERCENT;
 
         #endregion
 
@@ -229,7 +225,7 @@ namespace p1eXu5.Wpf.CustomControls
                              typeof(ButtonChameleon),
                              new FrameworkPropertyMetadata(
                                     false,
-                                    new PropertyChangedCallback(OnRenderMouseOverChanged)));
+                                    OnRenderMouseOverChanged));
 
             /// <summary>
             /// When true the chrome renders with a mouse over look.
@@ -257,9 +253,9 @@ namespace p1eXu5.Wpf.CustomControls
                                 chameleon.InvalidateVisual();
                             }
 
-                            var parameters = chameleon.GetHoverAnimationParameters( _hoverDuration );
+                            var parameters = chameleon.GetHoverAnimationParameters( HoverDuration );
                             AnimateBrushColor( parameters );
-                            AnimateBrushOpacity( parameters.From, _hoverDuration );
+                            AnimateBrushOpacity( parameters.From, HoverDuration );
                         }
                         // Mouse is not hovered
                         else if (chameleon._localResouces == null ) {
@@ -267,7 +263,7 @@ namespace p1eXu5.Wpf.CustomControls
                         }
                         else {
                             // TODO to normal state animations:
-                            AnimateBackgroundToNormal( chameleon, _pressedDuration );
+                            AnimateBackgroundToNormal( chameleon, PressedDuration );
                         }
                     }
                 }
@@ -327,13 +323,13 @@ namespace p1eXu5.Wpf.CustomControls
 
                     }
                 }
-                else if (parameters.To is SolidColorBrush to)
+                else if (parameters.To is SolidColorBrush)
                 {
                     parameters.From.BeginAnimation(
                         SolidColorBrush.ColorProperty, 
                         new ColorAnimation( ((SolidColorBrush)parameters.To).Color, parameters.Duration));
                 }
-                else if ( parameters.To is GradientBrush from ) {
+                else if ( parameters.To is GradientBrush ) {
 
                 }
 
@@ -353,7 +349,7 @@ namespace p1eXu5.Wpf.CustomControls
                              typeof(ButtonChameleon),
                              new FrameworkPropertyMetadata(
                                     false,
-                                    new PropertyChangedCallback(OnRenderPressedChanged)));
+                                    OnRenderPressedChanged));
 
             /// <summary>
             /// When true the chrome renders with a pressed look.
@@ -370,9 +366,6 @@ namespace p1eXu5.Wpf.CustomControls
 
                 if (Animates)
                 {
-                    Brush bo;
-
-
                     if ((bool)e.NewValue)
                     {
                         if (chameleon._localResouces == null)
@@ -384,11 +377,11 @@ namespace p1eXu5.Wpf.CustomControls
 
                         // TODO animations setup:
 
-                        var parameters = chameleon.GetPressedAnimationParameters( _pressedDuration );
+                        var parameters = chameleon.GetPressedAnimationParameters( PressedDuration );
                         AnimateBrushColor( parameters );
 
                         if ( !chameleon.RenderMouseOver ) {
-                            AnimateBrushOpacity( parameters.From, _pressedDuration );
+                            AnimateBrushOpacity( parameters.From, PressedDuration );
                         }
                     }
                     // Mouse is not hovered
@@ -399,11 +392,11 @@ namespace p1eXu5.Wpf.CustomControls
                     else
                     {
                         if ( chameleon.RenderMouseOver ) {
-                            var parameters = chameleon.GetHoverAnimationParameters( _pressedDuration );
+                            var parameters = chameleon.GetHoverAnimationParameters( PressedDuration );
                             AnimateBrushColor(parameters);
                         }
                         else {
-                            AnimateBackgroundToNormal( chameleon, _pressedDuration );
+                            AnimateBackgroundToNormal( chameleon, PressedDuration );
                         }
                     }
                 }
@@ -430,7 +423,7 @@ namespace p1eXu5.Wpf.CustomControls
                          typeof(ButtonChameleon),
                          new FrameworkPropertyMetadata(
                                 false,
-                                new PropertyChangedCallback(OnRenderDisabledChanged)));
+                                OnRenderDisabledChanged));
 
         /// <summary>
         /// When true the chrome renders with a mouse over look.
@@ -443,7 +436,7 @@ namespace p1eXu5.Wpf.CustomControls
 
         private static void OnRenderDisabledChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ButtonChameleon chameleon = ((ButtonChameleon)o);
+            //ButtonChameleon chameleon = ((ButtonChameleon)o);
 
 
         }
@@ -585,7 +578,7 @@ namespace p1eXu5.Wpf.CustomControls
 
         #region CLR Properties
 
-        private static readonly object _lock = new object();
+        private static readonly object Lock = new object();
 
         private static bool Animates =>
             SystemParameters.PowerLineStatus == PowerLineStatus.Online &&
@@ -619,7 +612,7 @@ namespace p1eXu5.Wpf.CustomControls
             get {
                 if ( _commonDisabledBackgroundBrush == null ) {
                     bool lockTaken = false;
-                    Monitor.Enter( _lock, ref lockTaken );
+                    Monitor.Enter( Lock, ref lockTaken );
 
                     if ( _commonDisabledBackgroundBrush == null ) {
                         _commonDisabledBackgroundBrush = new SolidColorBrush();
@@ -629,7 +622,7 @@ namespace p1eXu5.Wpf.CustomControls
                         }
                     }
 
-                    if ( lockTaken ) Monitor.Exit( _lock );
+                    if ( lockTaken ) Monitor.Exit( Lock );
                 }
 
                 return _commonDisabledBackgroundBrush;
@@ -659,7 +652,7 @@ namespace p1eXu5.Wpf.CustomControls
                 if (_commonMouseHoverBackgroundBrush == null)
                 {
                     bool lockTaken = false;
-                    Monitor.Enter(_lock, ref lockTaken);
+                    Monitor.Enter(Lock, ref lockTaken);
 
                     if (_commonMouseHoverBackgroundBrush == null)
                     {
@@ -671,7 +664,7 @@ namespace p1eXu5.Wpf.CustomControls
                         }
                     }
 
-                    if (lockTaken) Monitor.Exit(_lock);
+                    if (lockTaken) Monitor.Exit(Lock);
                 }
 
                 return _commonMouseHoverBackgroundBrush;
@@ -702,7 +695,7 @@ namespace p1eXu5.Wpf.CustomControls
                 if (_commonPressedBackgroundBrush == null)
                 {
                     bool lockTaken = false;
-                    Monitor.Enter(_lock, ref lockTaken);
+                    Monitor.Enter(Lock, ref lockTaken);
 
                     if (_commonPressedBackgroundBrush == null)
                     {
@@ -714,7 +707,7 @@ namespace p1eXu5.Wpf.CustomControls
                         }
                     }
 
-                    if (lockTaken) Monitor.Exit(_lock);
+                    if (lockTaken) Monitor.Exit(Lock);
                 }
 
                 return _commonPressedBackgroundBrush;
@@ -745,7 +738,7 @@ namespace p1eXu5.Wpf.CustomControls
                 if (_commonNormalBackgroundBrush == null)
                 {
                     bool lockTaken = false;
-                    Monitor.Enter(_lock, ref lockTaken);
+                    Monitor.Enter(Lock, ref lockTaken);
 
                     if (_commonNormalBackgroundBrush == null)
                     {
@@ -757,7 +750,7 @@ namespace p1eXu5.Wpf.CustomControls
                         }
                     }
 
-                    if (lockTaken) Monitor.Exit(_lock);
+                    if (lockTaken) Monitor.Exit(Lock);
                 }
 
                 return _commonNormalBackgroundBrush;
@@ -958,11 +951,6 @@ namespace p1eXu5.Wpf.CustomControls
             }
         }
 
-
-        private void DrawBorder(DrawingContext dc, ref Rect bounds)
-        {
-
-        }
 
         #endregion
 

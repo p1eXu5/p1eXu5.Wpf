@@ -1,10 +1,10 @@
-﻿
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using p1eXu5.Wpf.MvvmBaseLibrary;
 
-namespace p1eXu5.Wpf.MvvmBaseLibrary
+namespace p1eXu5.Wpf.MvvmLibrary
 {
     public class MvvmAsyncCommand : IAsyncCommand
     {

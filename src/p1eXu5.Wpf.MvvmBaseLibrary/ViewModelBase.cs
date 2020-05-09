@@ -3,11 +3,10 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.ComponentModel.DataAnnotations;
 
 namespace p1eXu5.Wpf.MvvmBaseLibrary
 {
-    public abstract class ViewModel : NotifyingObject, IDataErrorInfo
+    public abstract class ViewModelBase : NotifyingObject, IDataErrorInfo
     {
         public string this[string columnName] => OnValidate(columnName);
 
@@ -15,15 +14,7 @@ namespace p1eXu5.Wpf.MvvmBaseLibrary
 
         protected virtual string OnValidate(string propertyName)
         {
-            ValidationContext validationContext = new ValidationContext(this) {DisplayName = propertyName};
-            var errorsCollection = new Collection<ValidationResult>();
-
-            if (Validator.TryValidateProperty(this, validationContext, errorsCollection)) {
-
-                return errorsCollection.First().ErrorMessage;
-            }
-
-            return null;
+            return "";
         }
 
         protected static void Observe<TModel, TViewModel> (ReadOnlyObservableCollection<TModel> observable, 
@@ -67,7 +58,7 @@ namespace p1eXu5.Wpf.MvvmBaseLibrary
                     try {
                         observator.Clear();
                     }
-                    catch ( Exception ex ) {
+                    catch ( Exception ) {
                         ;
                     }
                 }

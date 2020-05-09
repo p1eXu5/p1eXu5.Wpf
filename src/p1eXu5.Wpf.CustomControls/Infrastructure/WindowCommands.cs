@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace Agbm.Wpf.CustomControls.Infrastructure
 {
-    publicp1eXu5ss WindowCommands
+    public class WindowCommands
     {
         static WindowCommands()
         {

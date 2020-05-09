@@ -1,8 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using p1eXu5.Wpf.MvvmBaseLibrary;
 
-namespace Agbm.Wpf.MvvmBaseLibrary
+namespace p1eXu5.Wpf.MvvmLibrary
 {
     public static class TaskExtensions
     {
