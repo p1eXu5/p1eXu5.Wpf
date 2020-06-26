@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using p1eXu5.Wpf.MvvmBaseLibrary;
 
@@ -13,6 +14,7 @@ namespace p1eXu5.Wpf.MvvmLibrary
             }
             catch( Exception ex ) {
 
+                Debug.WriteLine( ex.Message );
                 handler?.HandleError( ex );
             }
         }
