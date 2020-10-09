@@ -1,11 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net471;net35</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net45</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <Description>It's a small library for MVVM pattern using in WPF application and contained commands, dialog repository, view model base class and notifying object</Description>
     <PackageTags>wpf;mvvm</PackageTags>
 
   </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Condition=" '$(TargetFramework)' == 'net471' " Include="System.ComponentModel.DataAnnotations" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 
 </Project>

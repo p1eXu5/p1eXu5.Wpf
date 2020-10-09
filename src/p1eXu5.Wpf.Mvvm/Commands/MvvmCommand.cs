@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace p1eXu5.Wpf.MvvmBaseLibrary
+namespace p1eXu5.Wpf.Mvvm.Commands
 {
     public class MvvmCommand : ICommand
     {

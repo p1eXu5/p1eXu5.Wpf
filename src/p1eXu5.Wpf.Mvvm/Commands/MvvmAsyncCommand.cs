@@ -2,10 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using p1eXu5.Wpf.MvvmBaseLibrary;
 
-namespace p1eXu5.Wpf.MvvmLibrary
+namespace p1eXu5.Wpf.Mvvm.Commands
 {
+
+    using Contracts;
+    using Extensions;
+
     public class MvvmAsyncCommand : IAsyncCommand
     {
         private readonly Func< object, Task > _execute;

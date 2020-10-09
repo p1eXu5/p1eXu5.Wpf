@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Linq;
 using NUnit.Framework;
+using p1eXu5.Wpf.Mvvm;
 
-namespace p1eXu5.Wpf.MvvmBaseLibrary.Tests.FunctionalTests
+namespace p1eXu5.Wpf.Mvvm.Tests.IntegrationTests
 {
     [TestFixture]
-    public class NotifyingObjectTests
+    public class NotifyingObjectITests
     {
         [Test]
         public void NotifyingObject_IsAbstract()
@@ -42,7 +43,7 @@ namespace p1eXu5.Wpf.MvvmBaseLibrary.Tests.FunctionalTests
             property.SetValue(notifyingObject, "");
 
             // Assert:
-            Assert.That(property.Name == res);
+            Assert.That( property.Name == res, $"{nameof(res)}: {res}; {nameof(property.Name)}: {property.Name}." );
         }
 
         #region Factory

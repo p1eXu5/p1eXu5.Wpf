@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\p1eXu5.Wpf.CustomControls\p1eXu5.Wpf.CustomControls.csproj" />
-    <ProjectReference Include="..\..\src\p1eXu5.Wpf.MvvmLibrary\p1eXu5.Wpf.MvvmLibrary.csproj" />
+    <ProjectReference Include="..\..\src\p1eXu5.Wpf.MvvmLibrary\p1eXu5.Wpf.Mvvm.csproj" />
   </ItemGroup>
 
   <ItemGroup>

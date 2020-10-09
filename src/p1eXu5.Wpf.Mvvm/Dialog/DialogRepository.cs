@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Windows;
 
-namespace p1eXu5.Wpf.MvvmBaseLibrary
+namespace p1eXu5.Wpf.Mvvm.Dialog
 {
+    using Contracts;
+
     public class DialogRepository : IDialogRepository
     {
         private readonly Dictionary<Type, Type> _repository;

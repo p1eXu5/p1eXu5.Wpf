@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 using System;
 using System.ComponentModel;
+using p1eXu5.Wpf.Mvvm;
 
-namespace p1eXu5.Wpf.MvvmBaseLibrary.Tests.UnitTests
+namespace p1eXu5.Wpf.Mvvm.Tests.UnitTests
 {
     [TestFixture]
-    public class ViewModelUnitTests
+    public class ViewModelBaseUTests
     {
         [Test]
         public void ViewModel_IsAbstract()
@@ -14,7 +15,7 @@ namespace p1eXu5.Wpf.MvvmBaseLibrary.Tests.UnitTests
         }
 
         [Test]
-        public void ViewModel_ByDefault_DerivesNotyfierObject()
+        public void ViewModel_ByDefault_DerivesNotifierObject()
         {
             var viewModel = GetViewModel();
 

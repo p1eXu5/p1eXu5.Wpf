@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace p1eXu5.Wpf.MvvmBaseLibrary
+namespace p1eXu5.Wpf.Mvvm.Contracts
 {
     public interface IDialog
     {

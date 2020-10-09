@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using p1eXu5.Wpf.MvvmBaseLibrary;
 
-namespace p1eXu5.Wpf.MvvmLibrary
+namespace p1eXu5.Wpf.Mvvm.Dialog
 {
-    public class DialogViewModel : ViewModelBase, IDialogCloseRequested
+    using Contracts;
+    using Commands;
+
+
+    public abstract class DialogViewModel : IDialogCloseRequested
     {
         public ICommand OkCommand => new MvvmCommand(p => { OnDialogRequestClose(this, new CloseRequestedEventArgs(true));});
         public ICommand CancelCommand => new MvvmCommand(p => { OnDialogRequestClose(this, new CloseRequestedEventArgs(false));});
